@@ -155,7 +155,7 @@ def plot_combined_ism_logos(sequences, scores_dict, save_path=None):
 
         if position != -1:
             x = position -1 + 4
-        ax.axvspan(x - 0.5, x + 0.5, color='lightblue', alpha=0.4)
+            ax.axvspan(x - 0.5, x + 0.5, color='lightblue', alpha=0.4)
 
         plt.tight_layout()
         if save_path:

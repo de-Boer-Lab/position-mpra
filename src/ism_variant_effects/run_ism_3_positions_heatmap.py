@@ -7,6 +7,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import logomaker
+import seaborn as sns 
 
 sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/mpra_models/random-promoter-dream-challenge-2022/benchmarks/human")
 TRAIN_BATCH_SIZE = 32
@@ -28,7 +29,6 @@ from tqdm import tqdm
 upstream = "ACTGGCCGCTTGACG"
 downstream = "CACTGCGGCTCCTGCG"
 
-#### Sequence I am doing ISM on ####
 sequence_dict = {
 "A_wC": upstream + "TCTCCTCCAGGATTACTACTGTTAGTCTGTCTTTCCACCTCCAGTCTCTTGTGCCAATCCATCCCAAACATAATAGTTACAGATTGGCCGGGCGCGGTGCCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCAAGGCGGATGGATCAGCTGAAGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCTTGTCT" + downstream, 
 "R_wC": upstream + "TCTCCTCCAGGATTACTACTGTTAGTCTGTCTTTCCACCTCCAGTCTCTTGTGCCAATCCATCCCAAACATAATAGTTACAGATTGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCAAGGCGGATGGATCAGCTGAAGTCAGGAGTTCGAGACCAGCCTGGCCAACATGGTGAAACCTTGTCT" + downstream,
@@ -38,7 +38,7 @@ sequence_dict = {
 "R_wR": upstream + "TTACATTTAAAATATTCCACATTCAGAGTTGTAGAGGCCTTAGACTATTATCTCCTCCAGGATTACTACTGTTAGTCTGTCTTTCCACCTCCAGTCTCTTGTGCCAATCCATCCCAAACATAATAGTTACAGATTGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCAAGGCGGATGGATCAGC" + downstream}
 
 
-#### One Hot Encoder ####
+# 2. One-hot encoder
 def one_hot_encode(seq):
     mapping = {'A': [1, 0, 0, 0],
                'G': [0, 1, 0, 0],
@@ -47,7 +47,7 @@ def one_hot_encode(seq):
                'N': [0, 0, 0, 0]}
     return [mapping.get(base.upper(), [0, 0, 0, 0]) for base in seq]
 
-#### Perform ISM per sequence, returns both importance score and mutated predictions ####
+# 3. Perform ISM
 def perform_ism(sequence, model, rev_flag, device):
     sequence_length = len(sequence)
 
@@ -61,9 +61,12 @@ def perform_ism(sequence, model, rev_flag, device):
         original_prediction = model(original_input).cpu().flatten().item()
 
     importance_scores = np.zeros(sequence_length)
+    ism_dict = {}  # {position: {base: mut_pred}}
+
 
     for i in range(sequence_length):
         original_base = sequence[i]
+        ism_dict[i] = {}
         for mutated_base in "ACGT":
             if mutated_base == original_base:
                 continue
@@ -75,16 +78,18 @@ def perform_ism(sequence, model, rev_flag, device):
             with torch.no_grad():
                 mut_pred = model(mut_input).cpu().flatten().item()
             importance_scores[i] += (original_prediction - mut_pred)
+            ism_dict[i][original_base] = original_prediction
+            ism_dict[i][mutated_base] = mut_pred
 
-    return importance_scores / 3.0
+    return importance_scores / 3.0, ism_dict
 
-#### plot logo in one panel ####
+
 def plot_combined_ism_logos(sequences, scores_dict, save_path=None):
     color_scheme = {
-        'A': '#1f77b4',  
-        'C': '#2ca02c', 
-        'G': '#ff7f0e',  
-        'T': '#d62728',  
+        'A': '#1f77b4',  # blue
+        'C': '#2ca02c',  # green
+        'G': '#ff7f0e',  # orange
+        'T': '#d62728',  # red
     }
 
     seq_order = ['R_wL', 'A_wL', 'R_wC', 'A_wC', 'R_wR', 'A_wR']
@@ -131,19 +136,12 @@ def plot_combined_ism_logos(sequences, scores_dict, save_path=None):
         xtick_labels = [str(int(x + genomic_offset)) for x in xticks]
         ax.set_xticklabels(xtick_labels)
 
-        # if seq_id.endswith("wL"):
-        #     ax.axvline(x=50-1, color='red', linestyle='dotted', linewidth=1.2)
-        # elif seq_id.endswith("wC"):
-        #     ax.axvline(x=100-1, color='red', linestyle='dotted', linewidth=1.2)
-        # elif seq_id.endswith("wR"):
-        #     ax.axvline(x=150-1, color='red', linestyle='dotted', linewidth=1.2)
+
         highlight_positions = {
             "wL": 50 - 1,
             "wC": 100 - 1,
             "wR": 150 - 1,
         }
-        
-        #### This is for aesthetics only, marking the position of the variant #### 
         for key, x in highlight_positions.items():
             if seq_id.endswith(key):
                 if seq_id.startswith("A_"):
@@ -159,13 +157,43 @@ def plot_combined_ism_logos(sequences, scores_dict, save_path=None):
             plt.savefig(save_path, format="svg")
         plt.show()
 
+def plot_raw_ism_heatmap(ism_dict, out_file, dpi=300):
+    import pandas as pd
+    import seaborn as sns
+    import matplotlib.pyplot as plt
 
-#### Now running the ISM and logo plot ####
+    base_order = ["A", "C", "G", "T"]
+    all_positions = sorted(ism_dict.keys())
+    trimmed_positions = all_positions[15:-16]
+
+    raw_df = pd.DataFrame(index=base_order, columns=trimmed_positions, dtype=float)
+
+    for pos in trimmed_positions:
+        for base in base_order:
+            if base in ism_dict[pos]:
+                raw_df.at[base, pos] = ism_dict[pos][base]
+            else:
+                raw_df.at[base, pos] = None
+
+    # Dynamically scale width by number of positions, fixed height
+    plot_width = max(len(trimmed_positions) / 4, 6)  # wider if more positions
+    plot_height = 32  # small height for rectangular shape
+
+    plt.figure(figsize=(plot_width, plot_height))
+    sns.heatmap(raw_df, cmap="coolwarm", linewidths=0.5, linecolor='gray',
+                cbar_kws={"label": "Prediction Score"})
+    plt.xlabel("Position")
+    plt.ylabel("Mutated Base")
+    plt.title(f"ISM Heatmap {seq_id}", pad=10)
+    plt.tight_layout()
+
+    plt.savefig(out_file, dpi=dpi)
+    plt.close()
+
 SEQ_SIZE = 231  
 CUDA_DEVICE_ID = 0
 device = torch.device(f"cuda:{CUDA_DEVICE_ID}" if torch.cuda.is_available() else "cpu")
 
-#### loading the model #### 
 first = BHIFirstLayersBlock(in_channels=5, out_channels=320, seqsize=SEQ_SIZE, kernel_sizes=[9, 15], pool_size=1, dropout=0.2)
 core = BHICoreBlock(in_channels=first.out_channels, out_channels=320, seqsize=first.infer_outseqsize(), lstm_hidden_channels=320, kernel_sizes=[9, 15], pool_size=1, dropout1=0.2, dropout2=0.5)
 final = AutosomeFinalLayersBlock(in_channels=core.out_channels)
@@ -176,8 +204,8 @@ model_rnn.load_state_dict(torch.load(model_path, map_location=device))
 model_rnn.to(device)
 model_rnn.eval()
 
-output_dir = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/ISM/3_windows"
-output_logo_dir = f"{output_dir}/ism_logos"
+output_dir = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/ISM/3_windows_heatmap"
+output_logo_dir = f"{output_dir}"
 os.makedirs(output_logo_dir, exist_ok=True)
 
 sequences = {}
@@ -186,9 +214,9 @@ scores_dict = {}
 for seq_id, seq in sequence_dict.items():
     print(f"Processing {seq_id}")
     rev_flag = 0 if seq_id.startswith("R_") else 0
-    ism_scores = perform_ism(seq, model_rnn, rev_flag, device)
+    ism_scores, ism_dict = perform_ism(seq, model_rnn, rev_flag, device)
+    plot_raw_ism_heatmap(ism_dict, f"{output_logo_dir}/heatmap_{seq_id}.png")
     
-    #### This is very sequence specific, I wanted to label the positions according to genomic coordinates from hg38 ####
     # 17:44139190:G:C
     offset = 44139190 - 99  # → 44139091
 
@@ -203,3 +231,24 @@ for seq_id, seq in sequence_dict.items():
     scores_dict[seq_id] = ism_scores
 
 plot_combined_ism_logos(sequences, scores_dict, save_path=f"{output_logo_dir}/ISM_logo_panel.svg")
+
+### Plot heatmap as a panel ### 
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+import os
+
+seq_order = ['R_wL', 'A_wL', 'R_wC', 'A_wC', 'R_wR', 'A_wR']
+fig, axes = plt.subplots(3, 2, figsize=(10, 12))
+
+for ax, seq_id in zip(axes.flat, seq_order):
+    img_path = f"{output_logo_dir}/heatmap_{seq_id}.png"  # Make sure these files exist
+    img = mpimg.imread(img_path)
+    ax.imshow(img)
+    ax.axis('off')
+    ax.set_title(seq_id, fontsize=10)
+
+plt.tight_layout()
+plt.savefig(f"{output_logo_dir}/heatmap_panel.svg", format="svg")
+plt.show()
+

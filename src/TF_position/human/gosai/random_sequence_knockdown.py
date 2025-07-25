@@ -123,7 +123,7 @@ def train_predict():
             lambda seq: predict_expression(trained_model, seq, SEQ_SIZE, device)
         )
         
-    test_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/predicted_k562_regulator_knockout.csv", index=False)
+    test_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/predicted_k562_regulator_knockout_gosai.csv", index=False)
     print(test_df.head())
 
 

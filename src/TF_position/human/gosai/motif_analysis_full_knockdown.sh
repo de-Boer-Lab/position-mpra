@@ -17,7 +17,7 @@ conda activate dream_rocky_2
 
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 export PATH=/arc/project/st-cdeboer-1/sambina/miniconda3/envs/dream_rocky_2/bin:$PATH
-python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/random_sequence_knockdown_rc.py.py &
-python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/random_sequence_knockdown.py.py &
+python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/random_sequence_knockdown_rc.py &
+python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/random_sequence_knockdown.py &
 
 wait

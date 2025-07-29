@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=motif_yeast_kc
+#SBATCH --job-name=motif_predict_full_knockout_human_enhancer
 #SBATCH --account=st-cdeboer-1-gpu
-#SBATCH --gres=gpu:1
-#SBATCH --time=48:00:00
+#SBATCH --gres=gpu:2
+#SBATCH --time=24:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
@@ -15,10 +15,9 @@
 source ~/.bashrc 
 conda activate dream_rocky
 
-# Update LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 export PATH=/arc/project/st-cdeboer-1/sambina/miniconda3/envs/dream_rocky/bin:$PATH
-python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/yeast/random_sequence_ism_average_full_knockdown.py &
-python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/yeast/random_sequence_ism_average_full_knockdown_rc.py &
+python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/gosai/random_sequence_knockdown_enhancer_rc.py &
+python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/gosai/random_sequence_knockdown_enhancer.py &
 
 wait

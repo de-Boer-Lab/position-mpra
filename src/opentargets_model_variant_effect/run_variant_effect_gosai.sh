@@ -12,11 +12,11 @@
 #SBATCH --mail-user=sambina.aninta@ubc.ca  
 
 source ~/.bashrc
-conda activate dream_rocky_2
+conda activate dream_rocky
 
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-BASE_SCRIPT_PATH="/scratch/st-cdeboer-1/sambina/position_mpra/experiments/opentargets_model_variant_effect/open_targets_offset_gosai.py"
+BASE_SCRIPT_PATH="/scratch/st-cdeboer-1/sambina/position_mpra/src/opentargets_model_variant_effect/open_targets_offset_gosai_1bp.py"
 BASE_MODEL_DIR="/scratch/st-cdeboer-1/sambina"
 BASE_OUTPUT_DIR="/scratch/st-cdeboer-1/sambina/position_mpra/outputs/opentargets_model/gosai"
 
@@ -27,7 +27,7 @@ declare -A models=(
 
 for key in "${!models[@]}"; do
     model_path="${models[$key]}"
-    output_path="$BASE_OUTPUT_DIR/${key}.csv.gz"
+    output_path="$BASE_OUTPUT_DIR/${key}_1bp.csv.gz"
     echo "Running job for model: $model_path, output: $output_path"
     srun --exclusive --gres=gpu:1 python $BASE_SCRIPT_PATH --model_path $model_path --output_path $output_path &
 done

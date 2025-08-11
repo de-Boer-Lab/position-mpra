@@ -3,7 +3,7 @@
 #SBATCH --account=st-cdeboer-1-gpu
 #SBATCH --output=/scratch/st-cdeboer-1/sambina/outputs/%A:%x.txt
 #SBATCH --error=/scratch/st-cdeboer-1/sambina/errors/%A:%x.err
-#SBATCH --time=40:00:00                    
+#SBATCH --time=80:00:00                    
 #SBATCH --gres=gpu:1        
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8                  
@@ -21,7 +21,7 @@ BASE_MODEL_DIR="/scratch/st-cdeboer-1/sambina"
 BASE_OUTPUT_DIR="/scratch/st-cdeboer-1/sambina/position_mpra/outputs/opentargets_model/gosai"
 
 declare -A models=(
-    ["k562_gosai"]="/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/gosai_2024/output_lfcse/output_k562/fold_4/model_best.pth"
+    ["k562_gosai"]="/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/gosai/output_lfcse/output_k562/fold_4/model_best.pth"
 )
 
 

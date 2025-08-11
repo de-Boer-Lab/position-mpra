@@ -7,7 +7,7 @@ import argparse
 import sys
 from Bio import SeqIO
 
-sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/mpra_models/random-promoter-dream-challenge-2022/benchmarks/human")
+sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/models/random-promoter-dream-challenge-2022/benchmarks/human")
 
 def main(model_path, output_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -90,9 +90,9 @@ def main(model_path, output_path):
 
     predictions = {}
 
-    k562 = pd.read_csv("/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/agarwal/data_k562/fold_0/valid.txt", sep="\t")
+    k562 = pd.read_csv("/scratch/st-cdeboer-1/sambina/mpra/data/chromosome/gosai/data_lfcse/data_k562/fold_0/valid.txt.gz", sep="\t", compression="gzip")
     upstream = k562.iloc[0]['seq'][:15]
-    downstream = k562.iloc[0]['seq'][-15:]
+    downstream = k562.iloc[0]['seq'][-16:]
 
 
     for offset in offsets:

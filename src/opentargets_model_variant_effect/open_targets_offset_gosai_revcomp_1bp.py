@@ -9,7 +9,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 
-sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/mpra_models/random-promoter-dream-challenge-2022/benchmarks/human")
+sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/models/random-promoter-dream-challenge-2022/benchmarks/human")
 
 def main(model_path, output_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -96,7 +96,7 @@ def main(model_path, output_path):
     offsets = list(range(-90, 91, 1))
     predictions = {}
 
-    k562 = pd.read_csv("/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/gosai_2024/data_lfcse/data_k562/fold_0/valid.txt", sep="\t")
+    k562 = pd.read_csv("/scratch/st-cdeboer-1/sambina/mpra/data/chromosome/gosai/data_lfcse/data_k562/fold_0/valid.txt.gz", sep="\t", compression="gzip")
     upstream = k562.iloc[0]['seq'][:15]
     downstream = k562.iloc[0]['seq'][-16:]
 
@@ -104,8 +104,6 @@ def main(model_path, output_path):
     for offset in offsets:
         info_list = [generate_sequences(row, sidemer_offset=offset) for index, row in snvs_only.iterrows()]
         pred_key = f"offset_{offset}"
-        # print(info_list[0])
-        # print(offset)
         predictions[pred_key] = make_predictions(info_list, upstream, downstream)
         # break
 

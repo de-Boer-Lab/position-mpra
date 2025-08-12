@@ -8,7 +8,7 @@ import os
 import matplotlib.pyplot as plt
 import logomaker
 
-sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/mpra_models/random-promoter-dream-challenge-2022/benchmarks/human")
+sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/models/random-promoter-dream-challenge-2022/benchmarks/human")
 TRAIN_BATCH_SIZE = 32
 N_PROCS = 4
 VALID_BATCH_SIZE = 32
@@ -75,7 +75,7 @@ def perform_ism(sequence, model, rev_flag, device):
                 mut_pred = model(mut_input).cpu().flatten().item()
             importance_scores[i] += (original_prediction - mut_pred)
 
-    return importance_scores / 3.0
+    return importance_scores / 3.0, original_prediction
 
 
 def plot_combined_ism_logos(sequences, scores_dict, save_path=None):
@@ -173,7 +173,7 @@ core = BHICoreBlock(in_channels=first.out_channels, out_channels=320, seqsize=fi
 final = AutosomeFinalLayersBlock(in_channels=core.out_channels)
 
 model_rnn = PrixFixeNet(first=first, core=core, final=final, generator=generator)
-model_path = "/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/gosai_2024/output_lfcse/output_k562/fold_4/model_best.pth"
+model_path = "/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/gosai/output_lfcse/output_k562/fold_4/model_best.pth"
 model_rnn.load_state_dict(torch.load(model_path, map_location=device))
 model_rnn.to(device)
 model_rnn.eval()
@@ -185,10 +185,11 @@ os.makedirs(output_logo_dir, exist_ok=True)
 sequences = {}
 scores_dict = {}
 
+predictions = {}
 for seq_id, seq in sequence_dict.items():
     print(f"Processing {seq_id}")
     rev_flag = 0 if seq_id.startswith("R_") else 0
-    ism_scores = perform_ism(seq, model_rnn, rev_flag, device)
+    ism_scores, original_pred = perform_ism(seq, model_rnn, rev_flag, device)
     # 17:44139190:G:C
     offset = 44139190 - 99  # → 44139091
 
@@ -196,10 +197,14 @@ for seq_id, seq in sequence_dict.items():
         "position": np.arange(len(seq)) + offset,
         "ISM_score": ism_scores
     })
+    
     df.to_csv(os.path.join(output_logo_dir, f"{seq_id}_ISM.csv"), index=False)
     print(f"Saved ISM scores to {seq_id}_ISM.csv")
+    predictions[seq_id] = original_pred
 
     sequences[seq_id] = seq
     scores_dict[seq_id] = ism_scores
-
+    
+df_pred = pd.DataFrame(list(predictions.items()), columns=["seq_id", "original_pred"])
+df_pred.to_csv(f"{output_logo_dir}/bar.csv", index=False)
 plot_combined_ism_logos(sequences, scores_dict, save_path=f"{output_logo_dir}/ISM_logo_panel.svg")

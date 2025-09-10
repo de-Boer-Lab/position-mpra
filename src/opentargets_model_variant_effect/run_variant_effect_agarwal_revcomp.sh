@@ -21,7 +21,7 @@ BASE_MODEL_DIR="/scratch/st-cdeboer-1/sambina"
 BASE_OUTPUT_DIR="/scratch/st-cdeboer-1/sambina/position_mpra/outputs/opentargets_model/agarwal"
 
 declare -A models=(
-    ["k562_agarwal"]="/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/agarwal/output_k562/fold_4/model_best.pth"
+    ["k562_agarwal"]="/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/agarwal/output_k562/fold_4/model_best.pth"
 )
 
 

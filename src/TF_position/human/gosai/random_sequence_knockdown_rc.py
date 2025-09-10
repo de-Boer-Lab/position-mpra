@@ -1,5 +1,5 @@
 import sys
-sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/mpra_models/random-promoter-dream-challenge-2022/benchmarks/human")
+sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/models/random-promoter-dream-challenge-2022/benchmarks/human")
 print(sys.path)
 
 import torch
@@ -75,7 +75,7 @@ def one_hot_encode(seq):
         'G': [0, 1, 0, 0],
         'C': [0, 0, 1, 0],
         'T': [0, 0, 0, 1],
-        'N': [0, 0, 0, 0]
+        'N': [0.25, 0.25, 0.25, 0.25]
     }
     return [mapping[base] for base in seq]
 
@@ -106,12 +106,12 @@ def train_predict():
     """Main function to train, predict, and evaluate."""
     CUDA_DEVICE_ID = 0
     SEQ_SIZE = 231
-    MODEL_PATH = f"/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/gosai_2024/output_lfcse/output_k562/fold_4/model_best.pth"
+    MODEL_PATH = f"/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/gosai/output_lfcse/output_k562/fold_4/model_best.pth"
     device = torch.device(f"cuda:{CUDA_DEVICE_ID}")
     generator = torch.Generator().manual_seed(42)
     model = initialize_model(SEQ_SIZE, generator)
     print(summary(model, (1, 5, SEQ_SIZE)))
-    test_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/k562_regulator_knockout_rc.csv")
+    test_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/k562_regulator_knockout_gosai_rc.csv")
     
     for offset in offsets:
         column_name = f"seq_{offset}"
@@ -123,7 +123,7 @@ def train_predict():
             lambda seq: predict_expression(trained_model, seq, SEQ_SIZE, device)
         )
         
-    test_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/predicted_k562_regulator_knockout_gosai_rc.csv", index=False)
+    test_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/predicted_k562_regulator_knockout_gosai_Ns_rc.csv", index=False)
     print(test_df.head())
 
 

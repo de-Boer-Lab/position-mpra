@@ -171,12 +171,12 @@ core = BHICoreBlock(in_channels=first.out_channels, out_channels=320, seqsize=fi
 final = AutosomeFinalLayersBlock(in_channels=core.out_channels)
 
 model_rnn = PrixFixeNet(first=first, core=core, final=final, generator=generator)
-model_path = "/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/gosai/output_lfcse/output_k562/fold_4/model_best.pth"
+model_path = "/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/gosai/output_lfcse/output_k562/fold_0/model_best.pth"
 model_rnn.load_state_dict(torch.load(model_path, map_location=device))
 model_rnn.to(device)
 model_rnn.eval()
 
-output_dir = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/ISM/3_windows"
+output_dir = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/ISM/3_windows_fold0"
 output_logo_dir = f"{output_dir}/ism_logos"
 os.makedirs(output_logo_dir, exist_ok=True)
 

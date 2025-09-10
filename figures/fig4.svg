@@ -28,15 +28,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
-     inkscape:zoom="0.97504148"
-     inkscape:cx="227.68262"
-     inkscape:cy="257.42495"
+     inkscape:zoom="1.7051575"
+     inkscape:cx="259.21359"
+     inkscape:cy="275.0479"
      inkscape:window-width="1384"
      inkscape:window-height="847"
      inkscape:window-x="62"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="axes_1" />
+     inkscape:current-layer="matplotlib.axis_2" />
   <metadata
      id="metadata1">
     <rdf:RDF>
@@ -827,16 +827,6 @@
           </g>
         </g>
         <g
-           id="patch_3"
-           style="stroke-linecap:butt;stroke-linejoin:round"
-           transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
-          <path
-             d="m 84.096,326.57601 h 18.728 v -35.4513 H 84.096 Z"
-             clip-path="url(#pe2b7d2134f)"
-             style="fill:#0d3359;stroke:#1f1f1f;stroke-linecap:butt;stroke-linejoin:miter"
-             id="path119" />
-        </g>
-        <g
            id="line2d_12"
            style="stroke-linecap:butt;stroke-linejoin:round"
            transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
@@ -1207,12 +1197,12 @@
         </g>
         <g
            id="line2d_32"
-           style="stroke-linecap:butt;stroke-linejoin:round"
+           style="stroke-linecap:butt;stroke-linejoin:round;stroke:#e0e0e0;stroke-opacity:1"
            transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
           <path
              d="M 46.64,303.33205 H 421.2"
              clip-path="url(#pe2b7d2134f)"
-             style="fill:none;stroke:#808080;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:1, 1.65;stroke-dashoffset:0"
+             style="fill:none;stroke:#e0e0e0;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:1, 1.65;stroke-dashoffset:0;stroke-opacity:1"
              id="path153" />
         </g>
         <g
@@ -1257,38 +1247,38 @@
         </g>
         <g
            id="patch_7"
-           style="stroke-linecap:butt;stroke-linejoin:round"
+           style="stroke-linecap:butt;stroke-linejoin:round;stroke:#e0e0e0;stroke-opacity:1"
            transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
           <path
              d="M 46.64,443.18758 V 26.88"
-             style="fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter"
+             style="fill:none;stroke:#e0e0e0;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
              id="path158" />
         </g>
         <g
            id="patch_8"
-           style="stroke-linecap:butt;stroke-linejoin:round"
+           style="stroke-linecap:butt;stroke-linejoin:round;stroke:#e0e0e0;stroke-opacity:1"
            transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
           <path
              d="M 421.2,443.18758 V 26.88"
-             style="fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter"
+             style="fill:none;stroke:#e0e0e0;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
              id="path159" />
         </g>
         <g
            id="patch_9"
-           style="stroke-linecap:butt;stroke-linejoin:round"
+           style="stroke-linecap:butt;stroke-linejoin:round;stroke:#e0e0e0;stroke-opacity:1"
            transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
           <path
              d="M 46.64,443.18758 H 421.2"
-             style="fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter"
+             style="fill:none;stroke:#e0e0e0;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
              id="path160" />
         </g>
         <g
            id="patch_10-3"
-           style="stroke-linecap:butt;stroke-linejoin:round"
+           style="stroke-linecap:butt;stroke-linejoin:round;stroke:#e0e0e0;stroke-opacity:1"
            transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
           <path
              d="M 46.64,26.88 H 421.2"
-             style="fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter"
+             style="fill:none;stroke:#e0e0e0;stroke-width:0.8;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
              id="path161" />
         </g>
         <g
@@ -1309,6 +1299,16 @@
              style="stroke-width:0.430866"
              x="-195.20624"
              y="49.527531">Knockout effect (WT − KO)</tspan></text>
+        <g
+           id="patch_3"
+           style="stroke-linecap:butt;stroke-linejoin:round"
+           transform="matrix(0.65092202,0,0,0.66414467,39.27712,-39.092168)">
+          <path
+             d="m 84.096,326.57601 h 18.728 v -35.4513 H 84.096 Z"
+             clip-path="url(#pe2b7d2134f)"
+             style="fill:#0d3359;stroke:#1f1f1f;stroke-linecap:butt;stroke-linejoin:miter"
+             id="path119" />
+        </g>
       </g>
       <g
          id="patch_10" />

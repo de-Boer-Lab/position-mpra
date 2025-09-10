@@ -13,11 +13,11 @@
 #SBATCH --mail-type=ALL
 
 source ~/.bashrc 
-conda activate dream_rocky_2
+conda activate dream_rocky
 
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
-export PATH=/arc/project/st-cdeboer-1/sambina/miniconda3/envs/dream_rocky_2/bin:$PATH
-python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/random_sequence_knockdown_rc.py &
-python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/random_sequence_knockdown.py &
+export PATH=/arc/project/st-cdeboer-1/sambina/miniconda3/envs/dream_rocky/bin:$PATH
+python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/gosai/random_sequence_knockdown_rc.py &
+python /scratch/st-cdeboer-1/sambina/position_mpra/src/TF_position/human/gosai/random_sequence_knockdown.py &
 
 wait

@@ -25,7 +25,6 @@ input_prediction_file = f"{OUTPUT_DIR}/random_sequences.csv"
 motif_output = f"{OUTPUT_DIR}/predicted_random_motif_control.csv"
 
 # ============ Helper Functions ============
-
 def one_hot_encode(seq):
     mapping = {'A': [1, 0, 0, 0],
                'G': [0, 1, 0, 0],
@@ -114,18 +113,40 @@ selected_df = select_percentile_sequences(prediction)
 print(f"Selected {len(selected_df)} high-expression sequences.")
 
 # ============ Step 3: Create random motif and insert ============
-avg_motif_length = 14
-def generate_random_motif(length, seed=42):
-    random.seed(seed)
+# avg_motif_length = 14
+# def generate_random_motif(length, seed=42):
+#     random.seed(seed)
+#     return ''.join(random.choices(['A', 'T', 'C', 'G'], k=length))
+
+# random_motif = generate_random_motif(avg_motif_length)
+# print(random_motif)
+# motifs = {
+#     "random_motif": random_motif,
+#     "random_motif_alt": "N" * avg_motif_length
+# }
+
+# print("Using motifs:", motifs)
+
+import random
+
+def generate_random_motif(length, seed=None):
+    if seed is not None:
+        random.seed(seed)
     return ''.join(random.choices(['A', 'T', 'C', 'G'], k=length))
 
-random_motif = generate_random_motif(avg_motif_length)
-print(random_motif)
-motifs = {
-    "random_motif": random_motif,
-    "random_motif_alt": "N" * avg_motif_length
-}
-print("Using motifs:", motifs)
+motifs = {}
+seeds = range(40, 60)
+for i in range(1, 21):
+    seed = seeds[i-1]
+    length = random.randint(9, 14)
+    motif_name = f"random_motif_{i}"
+    motifs[motif_name] = generate_random_motif(length, seed)
+    motifs[f"{motif_name}_alt"] = "N" * length
+
+# Print them out
+for k, v in motifs.items():
+    print(f"{k}: {v}")
+
 
 def place_motifs(df, motifs):
     new_data = []
@@ -143,6 +164,7 @@ def place_motifs(df, motifs):
 
 motif_df = place_motifs(selected_df, motifs)
 motif_df['rev'] = 0
+print(f"Number of random sequences {len(selected_df)}")
 print(f"Placed motifs in {len(motif_df)} total sequences (ref + alt).")
 
 # ============ Step 4: Predict for motif-inserted sequences ============

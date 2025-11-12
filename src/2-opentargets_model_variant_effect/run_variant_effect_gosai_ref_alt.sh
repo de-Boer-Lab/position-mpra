@@ -3,7 +3,7 @@
 #SBATCH --account=st-cdeboer-1-gpu
 #SBATCH --output=/scratch/st-cdeboer-1/sambina/outputs/%A:%x.txt
 #SBATCH --error=/scratch/st-cdeboer-1/sambina/errors/%A:%x.err
-#SBATCH --time=80:00:00                    
+#SBATCH --time=10:00:00                    
 #SBATCH --gres=gpu:1        
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8                  
@@ -12,7 +12,7 @@
 #SBATCH --mail-user=sambina.aninta@ubc.ca  
 
 source ~/.bashrc
-conda activate dream_rocky
+conda activate dream_rocky_3
 
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
@@ -27,7 +27,7 @@ declare -A models=(
 
 for key in "${!models[@]}"; do
     model_path="${models[$key]}"
-    output_path="$BASE_OUTPUT_DIR/${key}_ref_alt.csv.gz"
+    output_path="$BASE_OUTPUT_DIR/${key}_ref_alt_with_seq.csv.gz"
     echo "Running job for model: $model_path, output: $output_path"
     srun --exclusive --gres=gpu:1 python $BASE_SCRIPT_PATH --model_path $model_path --output_path $output_path &
 done

@@ -129,11 +129,32 @@ selected_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4
 # Merge original and mutated motifs into one dictionary
 # mutated_motifs_list = {**motifs, **mutated_motifs}
 # print(mutated_motifs_list)
-motif = "CATACCGATAACAA"
-motifs = {
-    "random_motif": motif,
-    "random_motif_alt": "N" * len(motif)
-}
+# motif = "CATACCGATAACAA"
+# motifs = {
+#     "random_motif": motif,
+#     "random_motif_alt": "N" * len(motif)
+# }
+
+import random
+
+def generate_random_motif(length, seed=None):
+    if seed is not None:
+        random.seed(seed)
+    return ''.join(random.choices(['A', 'T', 'C', 'G'], k=length))
+
+motifs = {}
+seeds = range(40, 60)
+for i in range(1, 21):
+    seed = seeds[i-1]
+    length = random.randint(9, 14)
+    motif_name = f"random_motif_{i}"
+    motifs[motif_name] = generate_random_motif(length, seed)
+    motifs[f"{motif_name}_alt"] = "N" * length
+
+# Print them out
+for k, v in motifs.items():
+    print(f"{k}: {v}")
+    
 def place_motifs_with_offsets(df, motifs, offsets=[0]):
     new_data = []
 
@@ -162,7 +183,6 @@ dataframe = place_motifs_with_offsets(selected_df, motifs)
 print(len(dataframe))
 
 ### Now calculate the variant effects
-
 dataframe['rev'] = dataframe['seq_id'].str.endswith('_Reversed:') | dataframe['seq_id'].str.endswith('_R')
 dataframe['rev'] = dataframe['rev'].astype(int)
 predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/predicted_human_tfs_enhancer_random_motif.csv")

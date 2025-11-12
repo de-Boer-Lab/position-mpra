@@ -81,12 +81,16 @@ def main(model_path, output_path):
             pred_ref = model_rnn(ref_tensor)
             
             pred_diff = (pred_ref.detach().cpu().flatten() - pred_alt.detach().cpu().flatten()).tolist()
-            predictions.append({"ref": pred_ref.detach().cpu().flatten().tolist()[0], "alt": pred_alt.detach().cpu().flatten().tolist()[0]})
+            predictions.append({"ref": pred_ref.detach().cpu().flatten().tolist()[0], 
+                                "alt": pred_alt.detach().cpu().flatten().tolist()[0],
+                                "ref_seq": row["Ref_Sequence"],
+                                "alt_seq": row["Alt_Sequence"]})
         
         return predictions
 
 
-    offsets = [-90, -80, -60, -40, -20, 0, 20, 40, 60, 80, 90]
+    # offsets = [-90, -80, -60, -40, -20, 0, 20, 40, 60, 80, 90]
+    offsets = [0]
     predictions = {}
 
     k562 = pd.read_csv("/scratch/st-cdeboer-1/sambina/mpra/data/chromosome/gosai/data_lfcse/data_k562/fold_4/test.txt.gz", sep="\t", compression="gzip")

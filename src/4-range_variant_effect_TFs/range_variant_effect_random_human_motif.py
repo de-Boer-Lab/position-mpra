@@ -26,7 +26,7 @@ import torch
 import os
 import sys
 
-sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/mpra_models/random-promoter-dream-challenge-2022/benchmarks/human")
+sys.path.append("/scratch/st-cdeboer-1/sambina/mpra/models/random-promoter-dream-challenge-2022/benchmarks/human")
 from prixfixe.autosome import AutosomeFinalLayersBlock
 from prixfixe.bhi import BHIFirstLayersBlock, BHICoreBlock
 from prixfixe.prixfixe import PrixFixeNet
@@ -127,7 +127,7 @@ def predict(df, output):
         return model
 
     device = torch.device(f"cuda:{CUDA_DEVICE_ID}" if torch.cuda.is_available() else "cpu")
-    MODEL_PATH = "/scratch/st-cdeboer-1/sambina/mpra/mpra_with_chromosome/gosai_2024/output_lfcse/output_k562/fold_4/model_best.pth"
+    MODEL_PATH = "/scratch/st-cdeboer-1/sambina/mpra/output/chromosome/gosai/output_lfcse/output_k562/fold_4/model_best.pth"
     model = initialize_model(SEQ_SIZE, generator)    
     trained_model = load_model_weights(model, MODEL_PATH, device)
     predict_expression(trained_model, df, SEQ_SIZE, device, f"{output}")
@@ -137,7 +137,7 @@ def main():
     df = generate_random_dna_sequences()
     df['rev'] = df['seq_id'].str.endswith('_Reversed:') | df['seq_id'].str.endswith('_R')
     df['rev'] = df['rev'].astype(int)
-    output = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/range/human/random_sequences.csv"
+    output = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/random_sequences.csv"
     predict(df, output)
     
 if __name__ == "__main__":
@@ -152,7 +152,7 @@ def plot(df):
     # Show the plot
     plt.show()
     
-prediction = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/range/human/random_sequences.csv")
+prediction = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/random_sequences.csv")
 plot(prediction)
 
 ### Pick top 25 percentile from here
@@ -166,12 +166,12 @@ def select_percentile_sequences(df, num_sequences=500):
     selected_sequences = filtered_df.sample(n=min(num_sequences, len(filtered_df)), random_state=42)
     return selected_sequences[['seq_id', 'random_seq', 'predictions']]
 
-df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/range/human/random_sequences.csv")
+df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/random_sequences.csv")
 selected_df = select_percentile_sequences(df)
 print(selected_df)
 print(len(selected_df))
 
-motifs_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/k562_master_regulator.csv")
+motifs_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/5-TFs_position/human/k562_master_regulator.csv")
 motifs = motifs_df.set_index("Seed_motif")["Consensus"].to_dict()
 
 mutated_motifs = {key + "_alt": "N" * len(value) for key, value in motifs.items()}
@@ -211,4 +211,4 @@ print(len(dataframe))
 
 dataframe['rev'] = dataframe['seq_id'].str.endswith('_Reversed:') | dataframe['seq_id'].str.endswith('_R')
 dataframe['rev'] = dataframe['rev'].astype(int)
-predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/range/human/predicted_human_tfs.csv")
+predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/predicted_human_tfs.csv")

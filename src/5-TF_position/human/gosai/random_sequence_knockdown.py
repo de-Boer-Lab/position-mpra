@@ -111,7 +111,7 @@ def train_predict():
     generator = torch.Generator().manual_seed(42)
     model = initialize_model(SEQ_SIZE, generator)
     print(summary(model, (1, 5, SEQ_SIZE)))
-    test_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/k562_regulator_knockout_gosai.csv")
+    test_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/5-TFs_position/human/k562_regulator_knockout_gosai.csv.gz", compression="gzip")
     
     for offset in offsets:
         column_name = f"seq_{offset}"
@@ -123,7 +123,7 @@ def train_predict():
             lambda seq: predict_expression(trained_model, seq, SEQ_SIZE, device)
         )
         
-    test_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/predicted_k562_regulator_knockout_gosai_Ns.csv", index=False)
+    test_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/5-TFs_position/human/predicted_k562_regulator_knockout_gosai_Ns.csv.gz", compression="gzip", index=False)
     print(test_df.head())
 
 

@@ -119,9 +119,9 @@ def predict(df, output):
 import numpy as np
 import pandas as pd
 
-selected_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/range/human/downsampled1000_gosai_fold4.tsv", sep="\t")
+selected_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/downsampled1000_gosai_fold4.tsv", sep="\t")
 
-motifs_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/TFs_position/human/k562_master_regulator.csv")
+motifs_df = pd.read_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/5-TFs_position/human/k562_master_regulator.csv")
 motifs = motifs_df.set_index("Seed_motif")["Consensus"].to_dict()
 
 mutated_motifs = {key + "_alt": "N" * len(value) for key, value in motifs.items()}
@@ -161,4 +161,4 @@ print(len(dataframe))
 
 dataframe['rev'] = dataframe['seq_id'].str.endswith('_Reversed:') | dataframe['seq_id'].str.endswith('_R')
 dataframe['rev'] = dataframe['rev'].astype(int)
-predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/range/human/predicted_human_tfs_enhancer.csv")
+predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/predicted_human_tfs_enhancer.csv")

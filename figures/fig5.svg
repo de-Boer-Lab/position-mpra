@@ -8,7 +8,7 @@
    version="1.1"
    id="svg1"
    inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
-   sodipodi:docname="ism_logos.svg"
+   sodipodi:docname="fig5.svg"
    inkscape:export-filename="fig5.png"
    inkscape:export-xdpi="600"
    inkscape:export-ydpi="600"
@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.82724516"
-     inkscape:cx="373.52893"
-     inkscape:cy="667.8794"
-     inkscape:window-width="1440"
-     inkscape:window-height="872"
-     inkscape:window-x="0"
-     inkscape:window-y="-72"
+     inkscape:zoom="10.826692"
+     inkscape:cx="264.34666"
+     inkscape:cy="154.5255"
+     inkscape:window-width="1224"
+     inkscape:window-height="747"
+     inkscape:window-x="62"
+     inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="axes_3-8" />
+     inkscape:current-layer="legend_1" />
   <defs
      id="defs1">
     <marker
@@ -26424,7 +26424,7 @@
            id="tspan1-0"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:7.99994px;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:1.00063"
            x="-265.49622"
-           y="-231.14035">motifB</tspan></text>
+           y="-231.14035">motifI</tspan></text>
     </g>
     <g
        id="g1211"

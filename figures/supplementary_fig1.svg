@@ -11,7 +11,7 @@
    inkscape:export-xdpi="300"
    inkscape:export-ydpi="300"
    inkscape:version="1.4.2 (ebf0e940, 2025-05-08)"
-   sodipodi:docname="supplementary_fig2.svg"
+   sodipodi:docname="supplementary_fig1.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.7367999"
-     inkscape:cx="489.95663"
-     inkscape:cy="-5228.0137"
+     inkscape:zoom="1.0045881"
+     inkscape:cx="557.44243"
+     inkscape:cy="281.70751"
      inkscape:window-width="1384"
      inkscape:window-height="847"
-     inkscape:window-x="62"
+     inkscape:window-x="60"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="figure_1-1" />
   <defs
      id="defs1">
     <clipPath
@@ -6913,52 +6913,6 @@
        transform="matrix(0.35277777,0,0,0.35277777,25.216411,107.28171)">
       <text
          xml:space="preserve"
-         style="font-size:9.99998px;line-height:12.65px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:1.06582;paint-order:stroke fill markers"
-         x="83.503036"
-         y="22.81287"
-         id="text44"><tspan
-           sodipodi:role="line"
-           id="tspan44"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';stroke-width:1.06583"
-           x="83.503036"
-           y="22.81287">Variant Position (wrt centre)</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-size:9.99998px;line-height:12.65px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:1.06582;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
-         x="340.05548"
-         y="25.647049"
-         id="text44-6"><tspan
-           sodipodi:role="line"
-           id="tspan44-1"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';stroke-width:1.06583"
-           x="340.05548"
-           y="25.647049">Variant Position (wrt centre)</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-size:9.99998px;line-height:12.65px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:1.06582;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
-         x="114.82613"
-         y="-46.052635"
-         id="text44-2"
-         transform="rotate(-90)"><tspan
-           sodipodi:role="line"
-           id="tspan44-8"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';stroke-width:1.06583"
-           x="114.82613"
-           y="-46.052635">Variant Position (wrt centre)</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-size:9.99998px;line-height:12.65px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:1.06582;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
-         x="114.82613"
-         y="210.14612"
-         id="text44-1"
-         transform="rotate(-90)"><tspan
-           sodipodi:role="line"
-           id="tspan44-0"
-           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';stroke-width:1.06583"
-           x="114.82613"
-           y="210.14612">Variant Position (wrt centre)</tspan></text>
-      <text
-         xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12px;line-height:15.18px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:1.06582;paint-order:stroke fill markers"
          x="221.07283"
          y="-269.79916"
@@ -6990,20 +6944,6 @@
            style="stroke-width:1.06583"
            x="338.7988"
            y="-241.61812">Model trained on Agarwal et al. K562</tspan></text>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10px;line-height:12.65px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;fill:#000000;stroke-width:1.06582;paint-order:stroke fill markers"
-         x="-122.65329"
-         y="-500.78613"
-         id="text47"
-         transform="rotate(90)"><tspan
-           sodipodi:role="line"
-           id="tspan47"
-           style="font-size:10px;line-height:12.65px;stroke-width:1.06583"
-           x="-122.65329"
-           y="-500.78613">Pearson R<tspan
-   style="font-size:10px;line-height:12.65px;baseline-shift:super"
-   id="tspan48">2</tspan></tspan></text>
       <g
          id="figure_1"
          style="stroke-linecap:butt;stroke-linejoin:round"
@@ -7321,6 +7261,202 @@
                id="path390" />
           </g>
         </g>
+      </g>
+      <g
+         id="text474-4-4-1-5"
+         style="font-weight:bold;font-size:3.52778px;line-height:1;font-family:calibri;-inkscape-font-specification:'calibri Bold';word-spacing:0.0661458px;fill:#1a1a1a;stroke-width:0.353999;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
+         aria-label="OpenTarget Variants with log2FC &gt; |0.15| (43,779)"
+         transform="matrix(2.8346458,0,0,2.8346458,-129.13023,-342.6721)">
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="72.222458"
+           y="140.64845"
+           id="text112-7-5"><tspan
+             sodipodi:role="line"
+             id="tspan112-4-4"
+             style="stroke-width:0.152"
+             x="72.222458"
+             y="140.64845" /></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52778px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="46.008121"
+           y="127.9031"
+           id="text114-5-1"><tspan
+             sodipodi:role="line"
+             id="tspan114-1-8"
+             style="font-size:3.52778px;line-height:3.5278px;stroke-width:0.152"
+             x="46.008121"
+             y="127.9031">Variant Position (in bp relative to centre)</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="162.74454"
+           y="140.77367"
+           id="text115-7-3"><tspan
+             sodipodi:role="line"
+             id="tspan115-8-5"
+             style="stroke-width:0.152"
+             x="162.74454"
+             y="140.77367" /></text>
+      </g>
+      <g
+         id="text474-4-4-1-5-0"
+         style="font-weight:bold;font-size:3.52778px;line-height:1;font-family:calibri;-inkscape-font-specification:'calibri Bold';word-spacing:0.0661458px;fill:#1a1a1a;stroke-width:0.353999;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
+         aria-label="OpenTarget Variants with log2FC &gt; |0.15| (43,779)"
+         transform="matrix(2.8346458,0,0,2.8346458,131.54669,-342.6721)">
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="72.222458"
+           y="140.64845"
+           id="text112-7-5-0"><tspan
+             sodipodi:role="line"
+             id="tspan112-4-4-5"
+             style="stroke-width:0.152"
+             x="72.222458"
+             y="140.64845" /></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52778px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="46.008121"
+           y="127.9031"
+           id="text114-5-1-6"><tspan
+             sodipodi:role="line"
+             id="tspan114-1-8-7"
+             style="font-size:3.52778px;line-height:3.5278px;stroke-width:0.152"
+             x="46.008121"
+             y="127.9031">Variant Position (in bp relative to centre)</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="162.74454"
+           y="140.77367"
+           id="text115-7-3-8"><tspan
+             sodipodi:role="line"
+             id="tspan115-8-5-0"
+             style="stroke-width:0.152"
+             x="162.74454"
+             y="140.77367" /></text>
+      </g>
+      <g
+         id="text474-4-4-1-5-0-7"
+         style="font-weight:bold;font-size:3.52778px;line-height:1;font-family:calibri;-inkscape-font-specification:'calibri Bold';word-spacing:0.0661458px;fill:#1a1a1a;stroke-width:0.353999;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
+         aria-label="OpenTarget Variants with log2FC &gt; |0.15| (43,779)"
+         transform="matrix(2.8346458,0,0,2.8346458,161.96513,-295.77332)">
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="72.222458"
+           y="140.64845"
+           id="text112-7-5-0-0"><tspan
+             sodipodi:role="line"
+             id="tspan112-4-4-5-3"
+             style="stroke-width:0.152"
+             x="72.222458"
+             y="140.64845" /></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52778px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="34.530445"
+           y="-119.11691"
+           id="text114-5-1-6-9"
+           transform="rotate(90)"><tspan
+             sodipodi:role="line"
+             id="tspan114-1-8-7-8"
+             style="font-size:3.52778px;line-height:3.5278px;stroke-width:0.152"
+             x="34.530445"
+             y="-119.11691">Pearson's r (predicted variant effect)</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="162.74454"
+           y="140.77367"
+           id="text115-7-3-8-6"><tspan
+             sodipodi:role="line"
+             id="tspan115-8-5-0-5"
+             style="stroke-width:0.152"
+             x="162.74454"
+             y="140.77367" /></text>
+      </g>
+      <g
+         id="text474-4-4-1-5-3"
+         style="font-weight:bold;font-size:3.52778px;line-height:1;font-family:calibri;-inkscape-font-specification:'calibri Bold';word-spacing:0.0661458px;fill:#1a1a1a;stroke-width:0.353999;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
+         aria-label="OpenTarget Variants with log2FC &gt; |0.15| (43,779)"
+         transform="matrix(0,-2.8346458,2.8346458,0,-405.10191,103.60166)">
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="72.222458"
+           y="140.64845"
+           id="text112-7-5-04"><tspan
+             sodipodi:role="line"
+             id="tspan112-4-4-8"
+             style="stroke-width:0.152"
+             x="72.222458"
+             y="140.64845" /></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52778px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="46.008121"
+           y="127.9031"
+           id="text114-5-1-7"><tspan
+             sodipodi:role="line"
+             id="tspan114-1-8-5"
+             style="font-size:3.52778px;line-height:3.5278px;stroke-width:0.152"
+             x="46.008121"
+             y="127.9031">Variant Position (in bp relative to centre)</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="162.74454"
+           y="140.77367"
+           id="text115-7-3-9"><tspan
+             sodipodi:role="line"
+             id="tspan115-8-5-5"
+             style="stroke-width:0.152"
+             x="162.74454"
+             y="140.77367" /></text>
+      </g>
+      <g
+         id="text474-4-4-1-5-7"
+         style="font-weight:bold;font-size:3.52778px;line-height:1;font-family:calibri;-inkscape-font-specification:'calibri Bold';word-spacing:0.0661458px;fill:#1a1a1a;stroke-width:0.353999;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
+         aria-label="OpenTarget Variants with log2FC &gt; |0.15| (43,779)"
+         transform="matrix(0,-2.8346458,2.8346458,0,-146.35191,103.60166)">
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="72.222458"
+           y="140.64845"
+           id="text112-7-5-7"><tspan
+             sodipodi:role="line"
+             id="tspan112-4-4-9"
+             style="stroke-width:0.152"
+             x="72.222458"
+             y="140.64845" /></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52778px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="46.008121"
+           y="127.9031"
+           id="text114-5-1-5"><tspan
+             sodipodi:role="line"
+             id="tspan114-1-8-3"
+             style="font-size:3.52778px;line-height:3.5278px;stroke-width:0.152"
+             x="46.008121"
+             y="127.9031">Variant Position (in bp relative to centre)</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:3.52777px;line-height:3.5278px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.152;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;stroke-opacity:1;paint-order:stroke fill markers"
+           x="162.74454"
+           y="140.77367"
+           id="text115-7-3-3"><tspan
+             sodipodi:role="line"
+             id="tspan115-8-5-3"
+             style="stroke-width:0.152"
+             x="162.74454"
+             y="140.77367" /></text>
       </g>
     </g>
     <g

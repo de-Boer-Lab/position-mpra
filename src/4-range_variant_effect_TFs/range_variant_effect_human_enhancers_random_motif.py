@@ -185,4 +185,4 @@ print(len(dataframe))
 ### Now calculate the variant effects
 dataframe['rev'] = dataframe['seq_id'].str.endswith('_Reversed:') | dataframe['seq_id'].str.endswith('_R')
 dataframe['rev'] = dataframe['rev'].astype(int)
-predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/predicted_human_tfs_enhancer_random_motif.csv")
+predict(dataframe, "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/4-range/human/predicted_human_tfs_enhancer_random_motif.csv.gz", compression="gzip")

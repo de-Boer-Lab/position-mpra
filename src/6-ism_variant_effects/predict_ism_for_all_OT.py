@@ -3,6 +3,7 @@
 ### Get the 103k sequences and predict expression for when the variant is at the centre
 
 import pandas as pd
+from Bio.Seq import Seq
 import ast
 
 # --- Load predictions file ---
@@ -31,8 +32,6 @@ filtered_variants = predictions[
 ]
 
 print(filtered_variants.shape)
-
-# filtered_variants = filtered_variants.head(100)
 
 ### Predict for 4 mutations per sequence for ref and alt
 
@@ -75,8 +74,7 @@ def one_hot_encode(seq):
                'N': [0, 0, 0, 0]}
     return [mapping.get(base.upper(), [0, 0, 0, 0]) for base in seq]
 
-def predict_fn(seq):
-    rev_flag = 0
+def predict_fn(seq, rev_flag=0):
     SEQ_SIZE = 231  
     CUDA_DEVICE_ID = 0
     device = torch.device(f"cuda:{CUDA_DEVICE_ID}" if torch.cuda.is_available() else "cpu")
@@ -144,9 +142,44 @@ for idx, row in tqdm(filtered_variants.iterrows(), total=len(filtered_variants),
 
         mutation_results_alt.append(position_dict)
     
+    ### Now predict for the rev comp
+    seq = str(Seq(row["ref_seq"]).reverse_complement())
+    base_pred = predict_fn(seq)
+    mutation_results_ref_rc = []
+
+    for pos in range(len(seq)):
+        ref_base = seq[pos]
+        position_dict = {f"{ref_base}_ref_base_rc": base_pred}
+
+        for b in BASES:
+            if b != ref_base:
+                mutated_seq = seq[:pos] + b + seq[pos + 1:]
+                mut_pred = predict_fn(mutated_seq)
+                position_dict[b] = mut_pred
+
+        mutation_results_ref_rc.append(position_dict)
+        
+    seq = str(Seq(row["alt_seq"]).reverse_complement())
+    base_pred = predict_fn(seq)
+    mutation_results_alt_rc = []
+
+    for pos in range(len(seq)):
+        ref_base = seq[pos]
+        position_dict = {f"{ref_base}_alt_base_rc": base_pred}
+
+        for b in BASES:
+            if b != ref_base:
+                mutated_seq = seq[:pos] + b + seq[pos + 1:]
+                mut_pred = predict_fn(mutated_seq)
+                position_dict[b] = mut_pred
+
+        mutation_results_alt_rc.append(position_dict)
+    
     all_results.append({
         "mutations_ref": mutation_results_ref,
-        "mutations_alt": mutation_results_alt
+        "mutations_alt": mutation_results_alt,
+        "mutations_ref_rc": mutation_results_ref_rc,
+        "mutations_alt_rc": mutation_results_alt_rc,
     })
     
 
@@ -176,6 +209,8 @@ def compute_diffs(mutation_list):
 # Apply to every row of mut_df
 mut_df["ism_predictions_ref"] = mut_df["mutations_ref"].apply(compute_diffs)
 mut_df["ism_predictions_alt"] = mut_df["mutations_alt"].apply(compute_diffs)
+mut_df["ism_predictions_ref_rc"] = mut_df["mutations_ref_rc"].apply(compute_diffs)
+mut_df["ism_predictions_alt_rc"] = mut_df["mutations_alt_rc"].apply(compute_diffs)
 
 
 ### Calculate change in ISM for each position now. We will end up with 3 values.
@@ -211,6 +246,11 @@ mut_df["delta_predictions"] = mut_df.apply(
     axis=1
 )
 
+mut_df["delta_predictions_rc"] = mut_df.apply(
+    lambda row: compute_delta(row["ism_predictions_ref_rc"], row["ism_predictions_alt_rc"]),
+    axis=1
+)
+
 ### Now lets calculate avg ism per position so each sequence has a vector of L values
 
 def compute_position_means(delta_list):
@@ -229,4 +269,7 @@ def compute_position_means(delta_list):
 mut_df["ism"] = mut_df["delta_predictions"].apply(compute_position_means)
 mut_df["ism"].apply(lambda x: len(x)).unique()
 
-mut_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/6-ism_variant_effects/delta_ism_OT_all.csv")
+mut_df["ism_rc"] = mut_df["delta_predictions_rc"].apply(compute_position_means)
+mut_df["ism_rc"].apply(lambda x: len(x)).unique()
+
+mut_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/6-ism_variant_effects/delta_ism_OT_all_rc.csv")

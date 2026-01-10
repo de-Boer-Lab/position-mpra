@@ -4,7 +4,7 @@
 #SBATCH --output=/scratch/st-cdeboer-1/sambina/outputs/%A:%x.txt
 #SBATCH --error=/scratch/st-cdeboer-1/sambina/errors/%A:%x.err
 #SBATCH --time=168:00:00                    
-#SBATCH --gres=gpu:1        
+#SBATCH --gres=gpu:1 
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=8                  
 #SBATCH --mem=64G                          

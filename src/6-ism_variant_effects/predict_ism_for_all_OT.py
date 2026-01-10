@@ -191,7 +191,7 @@ def compute_diffs(mutation_list):
     """Takes a list of dicts (each position), returns list of dicts of deltas."""
     diffs = []
     for d in mutation_list:
-        ref_key = [k for k in d.keys() if k.endswith(("_ref_base", "_alt_base"))][0]
+        ref_key = [k for k in d.keys() if k.endswith(("_ref_base", "_alt_base", "_ref_base_rc", "_alt_base_rc"))][0]
         ref_base = ref_key.split("_")[0]
         ref_val = d[ref_key]
         
@@ -272,4 +272,4 @@ mut_df["ism"].apply(lambda x: len(x)).unique()
 mut_df["ism_rc"] = mut_df["delta_predictions_rc"].apply(compute_position_means)
 mut_df["ism_rc"].apply(lambda x: len(x)).unique()
 
-mut_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/6-ism_variant_effects/delta_ism_OT_all_rc.csv")
+mut_df.to_csv("/scratch/st-cdeboer-1/sambina/position_mpra/outputs/6-ism_variant_effects/delta_ism_OT_1_rc.csv")

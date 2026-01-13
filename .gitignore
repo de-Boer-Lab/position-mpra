@@ -1,3 +1,4 @@
 data/
 outputs/
 dcgm-gpu-stats*
+figures/._*

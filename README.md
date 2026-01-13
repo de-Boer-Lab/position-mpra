@@ -3,6 +3,8 @@ This repository contains the analysis code and supporting materials for studying
 
 ## Directory Structure
 
+<prev>
+```text
 ├── README.md
 ├── environment.yml
 ├── figures
@@ -13,6 +15,8 @@ This repository contains the analysis code and supporting materials for studying
     ├── 4-range_variant_effect_TFs
     ├── 5-TF_position
     └── 6-ism_variant_effects
+```
+<prev>
 
 ## Environment and Setup
 
@@ -21,12 +25,11 @@ All analyses are designed to be reproducible using Conda.
 `conda env create -f environment.yml
 conda activate variant-context`
 
-The environment.yml file specifies required packages for genomic data processing, machine learning, and visualization (e.g., numpy, pandas, pytorch/tensorflow, pybedtools, seaborn).
 
 ## Citation
 
 If you use this code, please cite:
 
-> *Position-dependent variant effects reveal the importance of context in genomic regulation.
+> Position-dependent variant effects reveal the importance of context in genomic regulation.
 
 (Preprint / manuscript details to be added.)

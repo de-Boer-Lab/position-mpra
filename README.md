@@ -20,8 +20,10 @@ This repository contains the analysis code and supporting materials for studying
 
 All analyses are designed to be reproducible using Conda.
 
-`conda env create -f environment.yml
-conda activate variant-context`
+```bash
+conda env create -f environment.yml
+conda activate variant-context
+```
 
 
 ## Citation

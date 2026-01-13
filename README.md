@@ -25,7 +25,7 @@ The environment.yml file specifies required packages for genomic data processing
 
 ## Citation
 
-If you use this code or adapt parts of the pipeline, please cite:
+If you use this code, please cite:
 
 > *Position-dependent variant effects reveal the importance of context in genomic regulation.
 

@@ -3,7 +3,6 @@ This repository contains the analysis code and supporting materials for studying
 
 ## Directory Structure
 
-<prev>
 ```text
 ├── README.md
 ├── environment.yml
@@ -16,7 +15,6 @@ This repository contains the analysis code and supporting materials for studying
     ├── 5-TF_position
     └── 6-ism_variant_effects
 ```
-<prev>
 
 ## Environment and Setup
 

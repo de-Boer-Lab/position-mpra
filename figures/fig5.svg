@@ -27,15 +27,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="10.826692"
-     inkscape:cx="264.34666"
-     inkscape:cy="154.5255"
-     inkscape:window-width="1224"
-     inkscape:window-height="747"
-     inkscape:window-x="62"
-     inkscape:window-y="25"
+     inkscape:zoom="1.7916878"
+     inkscape:cx="121.67298"
+     inkscape:cy="720.27057"
+     inkscape:window-width="1280"
+     inkscape:window-height="800"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="legend_1" />
+     inkscape:current-layer="layer1" />
   <defs
      id="defs1">
     <marker
@@ -56,6 +56,48 @@
          style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
          d="M 5.77,0 -2.88,5 V -5 Z"
          id="path1317" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle_F-000000_S-000000"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path204" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle_reversed"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <g
+         transform="rotate(180,0,0)"
+         id="g37">
+        <path
+           transform="scale(0.5)"
+           style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+           d="M 5.77,0 -2.88,5 V -5 Z"
+           id="path1" />
+      </g>
     </marker>
     <clipPath
        id="pa132fb0df4">
@@ -25065,7 +25107,7 @@
        id="text493-5"><tspan
          sodipodi:role="line"
          id="tspan493-9"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:0.152"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Italic';stroke-width:0.152"
          x="14.672123"
          y="152.5435">motifA</tspan></text>
     <text
@@ -25076,7 +25118,7 @@
        id="text494-4"><tspan
          sodipodi:role="line"
          id="tspan494-6"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:0.152"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Italic';stroke-width:0.152"
          x="32.145905"
          y="152.5435">motifI</tspan></text>
     <text
@@ -25120,7 +25162,7 @@
        id="text275-0-2"
        transform="scale(1.0195019,0.98087115)"><tspan
          sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;line-height:3.52781px;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:0.149092"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;line-height:3.52781px;font-family:Calibri;-inkscape-font-specification:'Calibri Italic';stroke-width:0.149092"
          x="17.03573"
          y="171.94005"
          id="tspan531">mutate motifI</tspan></text>
@@ -25135,7 +25177,9 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;line-height:3.52781px;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:0.149092"
          x="16.005081"
          y="205.10336"
-         id="tspan531-9">revcomp motifI</tspan></text>
+         id="tspan531-9">revcomp <tspan
+   style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Italic'"
+   id="tspan37">motifI</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-weight:bold;font-size:3.46028px;line-height:3.46031px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:#ffffff;stroke-width:0.149092;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:0;stroke-dashoffset:0.39685;paint-order:stroke fill markers"
@@ -25398,35 +25442,6 @@
               </g>
             </g>
             <g
-               id="matplotlib.axis_1"
-               style="stroke-linecap:butt;stroke-linejoin:round"
-               transform="translate(0,58.5094)">
-              <text
-                 xml:space="preserve"
-                 style="font-size:11.2486px;line-height:12.7485px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#2c5aa0;stroke-width:0.703038;paint-order:stroke fill markers"
-                 x="126.13416"
-                 y="244.4832"
-                 id="text2"
-                 transform="scale(0.93723321,1.0669703)"><tspan
-                   sodipodi:role="line"
-                   id="tspan2"
-                   style="fill:#1a1a1a;stroke-width:0.703038"
-                   x="126.13416"
-                   y="244.4832">2</tspan></text>
-              <text
-                 xml:space="preserve"
-                 style="font-size:11.2486px;line-height:12.7485px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#2c5aa0;stroke-width:0.703038;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
-                 x="71.298508"
-                 y="244.43102"
-                 id="text2-9"
-                 transform="scale(0.93723321,1.0669703)"><tspan
-                   sodipodi:role="line"
-                   id="tspan2-0"
-                   style="fill:#1a1a1a;stroke-width:0.703038"
-                   x="71.298508"
-                   y="244.43102">0</tspan></text>
-            </g>
-            <g
                id="patch_21-9"
                style="stroke:#e0e0e0;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1;stroke-width:0.89192952;stroke-dasharray:none"
                transform="matrix(0.99970999,0,0,1.2550848,0.03267489,-6.4070391)">
@@ -25480,62 +25495,89 @@
                  id="path163-7-6" />
             </g>
             <g
-               id="matplotlib.axis_1-3"
-               style="stroke-linecap:butt;stroke-linejoin:round"
-               transform="translate(126.67848,58.5094)">
+               id="g13">
               <text
                  xml:space="preserve"
-                 style="font-size:11.2486px;line-height:12.7485px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#2c5aa0;stroke-width:0.703038;paint-order:stroke fill markers"
-                 x="126.13416"
-                 y="244.4832"
-                 id="text2-6"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.37381px;line-height:10.1579px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.202475;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+                 x="71.185722"
+                 y="296.19882"
+                 id="text9"
                  transform="scale(0.93723321,1.0669703)"><tspan
                    sodipodi:role="line"
-                   id="tspan2-5"
-                   style="fill:#1a1a1a;stroke-width:0.703038"
-                   x="126.13416"
-                   y="244.4832">2</tspan></text>
+                   id="tspan9"
+                   style="stroke-width:0.202475"
+                   x="71.185722"
+                   y="296.19882">0</tspan></text>
               <text
                  xml:space="preserve"
-                 style="font-size:11.2486px;line-height:12.7485px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#2c5aa0;stroke-width:0.703038;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
-                 x="71.298508"
-                 y="244.43102"
-                 id="text2-9-5"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.37381px;line-height:10.1579px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.202475;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+                 x="126.89351"
+                 y="296.24231"
+                 id="text10"
                  transform="scale(0.93723321,1.0669703)"><tspan
                    sodipodi:role="line"
-                   id="tspan2-0-8"
-                   style="fill:#1a1a1a;stroke-width:0.703038"
-                   x="71.298508"
-                   y="244.43102">0</tspan></text>
+                   id="tspan10"
+                   style="stroke-width:0.202475"
+                   x="126.89351"
+                   y="296.24231">2</tspan></text>
             </g>
             <g
-               id="matplotlib.axis_1-3-3"
+               id="g13-2"
                style="stroke-linecap:butt;stroke-linejoin:round"
-               transform="translate(252.30006,58.5094)">
+               transform="translate(127.21033)">
               <text
                  xml:space="preserve"
-                 style="font-size:11.2486px;line-height:12.7485px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#2c5aa0;stroke-width:0.703038;paint-order:stroke fill markers"
-                 x="126.13416"
-                 y="244.4832"
-                 id="text2-6-7"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.37381px;line-height:10.1579px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.202475;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+                 x="71.185722"
+                 y="296.19882"
+                 id="text9-9"
                  transform="scale(0.93723321,1.0669703)"><tspan
                    sodipodi:role="line"
-                   id="tspan2-5-8"
-                   style="fill:#1a1a1a;stroke-width:0.703038"
-                   x="126.13416"
-                   y="244.4832">2</tspan></text>
+                   id="tspan9-8"
+                   style="stroke-width:0.202475"
+                   x="71.185722"
+                   y="296.19882">0</tspan></text>
               <text
                  xml:space="preserve"
-                 style="font-size:11.2486px;line-height:12.7485px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#2c5aa0;stroke-width:0.703038;stroke-linecap:butt;stroke-linejoin:round;paint-order:stroke fill markers"
-                 x="71.298508"
-                 y="244.43102"
-                 id="text2-9-5-8"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.37381px;line-height:10.1579px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.202475;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+                 x="126.89351"
+                 y="296.24231"
+                 id="text10-2"
                  transform="scale(0.93723321,1.0669703)"><tspan
                    sodipodi:role="line"
-                   id="tspan2-0-8-3"
-                   style="fill:#1a1a1a;stroke-width:0.703038"
-                   x="71.298508"
-                   y="244.43102">0</tspan></text>
+                   id="tspan10-0"
+                   style="stroke-width:0.202475"
+                   x="126.89351"
+                   y="296.24231">2</tspan></text>
+            </g>
+            <g
+               id="g13-2-8"
+               style="stroke-linecap:butt;stroke-linejoin:round"
+               transform="translate(252.92456)">
+              <text
+                 xml:space="preserve"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.37381px;line-height:10.1579px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.202475;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+                 x="71.185722"
+                 y="296.19882"
+                 id="text9-9-3"
+                 transform="scale(0.93723321,1.0669703)"><tspan
+                   sodipodi:role="line"
+                   id="tspan9-8-0"
+                   style="stroke-width:0.202475"
+                   x="71.185722"
+                   y="296.19882">0</tspan></text>
+              <text
+                 xml:space="preserve"
+                 style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.37381px;line-height:10.1579px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.202475;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+                 x="126.89351"
+                 y="296.24231"
+                 id="text10-2-6"
+                 transform="scale(0.93723321,1.0669703)"><tspan
+                   sodipodi:role="line"
+                   id="tspan10-0-2"
+                   style="stroke-width:0.202475"
+                   x="126.89351"
+                   y="296.24231">2</tspan></text>
             </g>
           </g>
           <g
@@ -25985,423 +26027,19 @@
        style="stroke-linecap:butt;stroke-linejoin:round"
        transform="matrix(0.35277777,0,0,0.35277777,161.64282,122.57267)">
       <g
-         id="text_25-7-7"
-         style="stroke-linecap:butt;stroke-linejoin:round"
-         transform="translate(-583.34603,-56.247877)">
-        <!-- Variant Position -->
-        <g
-           transform="matrix(0.1,0,0,-0.1,173.12656,117.10656)"
-           id="g194-3"
-           style="stroke-linecap:butt;stroke-linejoin:round">
-          <defs
-             id="defs178-1">
-            <path
-               id="path206"
-               d="M 1259,4147 V 2394 h 794 q 441,0 681,228 241,228 241,650 0,419 -241,647 -240,228 -681,228 z m -631,519 h 1425 q 785,0 1186,-355 402,-355 402,-1039 0,-691 -402,-1044 -401,-353 -1186,-353 H 1259 V 0 H 628 Z"
-               transform="scale(0.015625)" />
-          </defs>
-          <use
-             xlink:href="#DejaVuSans-20-3"
-             x="354.70117"
-             id="use186-7"
-             style="stroke-linecap:butt;stroke-linejoin:round" />
-          <text
-             xml:space="preserve"
-             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:100px;line-height:100px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#87de87;stroke-width:4.30866;stroke-miterlimit:0;stroke-dashoffset:0.39685;paint-order:stroke fill markers"
-             x="27.525553"
-             y="12.132126"
-             id="text206"
-             transform="scale(1,-1)"><tspan
-               sodipodi:role="line"
-               id="tspan206"
-               style="font-size:100px;line-height:100px;fill:#000000;stroke-width:4.30866"
-               x="27.525553"
-               y="12.132126">Perturbations</tspan></text>
-        </g>
-      </g>
-      <g
          id="g12"
-         transform="translate(0,359.09416)">
-        <g
-           id="text_25-7"
-           style="stroke-linecap:butt;stroke-linejoin:round"
-           transform="translate(-304.83078,-69.4792)">
-          <!-- Variant Position -->
-          <g
-             transform="matrix(0.1,0,0,-0.1,173.12656,117.10656)"
-             id="g194"
-             style="stroke-linecap:butt;stroke-linejoin:round">
-            <defs
-               id="defs178">
-              <path
-                 id="path527"
-                 d="M 1259,4147 V 2394 h 794 q 441,0 681,228 241,228 241,650 0,419 -241,647 -240,228 -681,228 z m -631,519 h 1425 q 785,0 1186,-355 402,-355 402,-1039 0,-691 -402,-1044 -401,-353 -1186,-353 H 1259 V 0 H 628 Z"
-                 transform="scale(0.015625)" />
-            </defs>
-            <use
-               xlink:href="#DejaVuSans-56-4"
-               id="use179"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-61-4"
-               x="60.658203"
-               id="use180"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-72-2"
-               x="121.9375"
-               id="use181"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-69-1"
-               x="163.05078"
-               id="use182"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-61-4"
-               x="190.83398"
-               id="use183"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-6e-0"
-               x="252.11328"
-               id="use184"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-74-1"
-               x="315.49219"
-               id="use185"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-20-3"
-               x="354.70117"
-               id="use186"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-50-0"
-               x="386.48828"
-               id="use187"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-6f-1"
-               x="443.16602"
-               id="use188"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-73-7"
-               x="504.34766"
-               id="use189"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-69-1"
-               x="556.44727"
-               id="use190"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-74-1"
-               x="584.23047"
-               id="use191"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-69-1"
-               x="623.43945"
-               id="use192"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-6f-1"
-               x="651.22266"
-               id="use193"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-            <use
-               xlink:href="#DejaVuSans-6e-0"
-               x="712.4043"
-               id="use194"
-               style="stroke-linecap:butt;stroke-linejoin:round" />
-          </g>
-        </g>
-        <g
-           id="g3"
-           transform="translate(76.5,4.5)">
-          <g
-             id="patch_26-7"
-             style="fill:#afc6e9;stroke-linecap:butt;stroke-linejoin:round"
-             transform="translate(-494.07304,-72.472448)">
-            <path
-               d="m 150.22812,131.78469 h 20 v -7 h -20 z"
-               style="fill:#afc6e9;stroke-linecap:butt;stroke-linejoin:round"
-               id="path194-3" />
-          </g>
-          <g
-             id="text_26-3"
-             style="stroke-linecap:butt;stroke-linejoin:round"
-             transform="translate(-494.07304,-72.472448)">
-            <!-- -50bp from centre -->
-            <g
-               transform="matrix(0.1,0,0,-0.1,178.22812,131.78469)"
-               id="g211-2"
-               style="stroke-linecap:butt;stroke-linejoin:round">
-              <defs
-                 id="defs194">
-                <path
-                   id="path528"
-                   d="M 313,2009 H 1997 V 1497 H 313 Z"
-                   transform="scale(0.015625)" />
-                <path
-                   id="path529"
-                   d="m 2375,4863 v -479 h -550 q -309,0 -430,-125 -120,-125 -120,-450 v -309 h 947 V 3053 H 1275 V 0 H 697 V 3053 H 147 v 447 h 550 v 244 q 0,584 272,851 272,268 862,268 z"
-                   transform="scale(0.015625)" />
-              </defs>
-              <use
-                 xlink:href="#DejaVuSans-2d-1"
-                 id="use195"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-35-8"
-                 x="36.083984"
-                 id="use196"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-30-2"
-                 x="99.707031"
-                 id="use197"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-62-1"
-                 x="163.33008"
-                 id="use198"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-70-5"
-                 x="226.80664"
-                 id="use199"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-20-3"
-                 x="290.2832"
-                 id="use200"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-66-40"
-                 x="322.07031"
-                 id="use201"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-72-2"
-                 x="357.27539"
-                 id="use202"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6f-1"
-                 x="396.13867"
-                 id="use203"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6d-3"
-                 x="457.32031"
-                 id="use204-0"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-20-3"
-                 x="554.73242"
-                 id="use205-8"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-63-6"
-                 x="586.51953"
-                 id="use206-7"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-65-1"
-                 x="641.5"
-                 id="use207-3"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6e-0"
-                 x="703.02344"
-                 id="use208-8"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-74-1"
-                 x="766.40234"
-                 id="use209-4"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-72-2"
-                 x="805.61133"
-                 id="use210-5"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-65-1"
-                 x="844.47461"
-                 id="use211-2"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-            </g>
-          </g>
-        </g>
-        <g
-           id="g1"
-           transform="translate(-273.23644,-81.970099)">
-          <g
-             id="patch_27-9"
-             style="fill:#5f8dd3;stroke-linecap:butt;stroke-linejoin:round">
-            <path
-               d="m 150.22812,146.46281 h 20 v -7 h -20 z"
-               style="fill:#5f8dd3;stroke-linecap:butt;stroke-linejoin:round"
-               id="path211" />
-          </g>
-          <g
-             id="text_27-0"
-             style="stroke-linecap:butt;stroke-linejoin:round">
-            <!-- centre -->
-            <g
-               transform="matrix(0.1,0,0,-0.1,178.22812,146.46281)"
-               id="g217"
-               style="stroke-linecap:butt;stroke-linejoin:round">
-              <use
-                 xlink:href="#DejaVuSans-63-6"
-                 id="use212"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-65-1"
-                 x="54.980469"
-                 id="use213"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6e-0"
-                 x="116.50391"
-                 id="use214"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-74-1"
-                 x="179.88281"
-                 id="use215"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-72-2"
-                 x="219.0918"
-                 id="use216"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-65-1"
-                 x="257.95508"
-                 id="use217"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-            </g>
-          </g>
-        </g>
-        <g
-           id="g2"
-           transform="translate(-187.55179,-97.3287)">
-          <g
-             id="patch_28-9"
-             style="fill:#2c5aa0;stroke-linecap:butt;stroke-linejoin:round">
-            <path
-               d="m 150.22812,161.14094 h 20 v -7 h -20 z"
-               style="fill:#2c5aa0;stroke-linecap:butt;stroke-linejoin:round"
-               id="path217" />
-          </g>
-          <g
-             id="text_28-8"
-             style="stroke-linecap:butt;stroke-linejoin:round">
-            <!-- +50bp from centre -->
-            <g
-               transform="matrix(0.1,0,0,-0.1,178.22812,161.14094)"
-               id="g234"
-               style="stroke-linecap:butt;stroke-linejoin:round">
-              <defs
-                 id="defs217">
-                <path
-                   id="path530"
-                   d="M 2944,4013 V 2272 H 4684 V 1741 H 2944 V 0 H 2419 V 1741 H 678 v 531 h 1741 v 1741 z"
-                   transform="scale(0.015625)" />
-              </defs>
-              <use
-                 xlink:href="#DejaVuSans-2b-0"
-                 id="use218"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-35-8"
-                 x="83.789062"
-                 id="use219"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-30-2"
-                 x="147.41211"
-                 id="use220"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-62-1"
-                 x="211.03516"
-                 id="use221"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-70-5"
-                 x="274.51172"
-                 id="use222"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-20-3"
-                 x="337.98828"
-                 id="use223"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-66-40"
-                 x="369.77539"
-                 id="use224"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-72-2"
-                 x="404.98047"
-                 id="use225"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6f-1"
-                 x="443.84375"
-                 id="use226"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6d-3"
-                 x="505.02539"
-                 id="use227"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-20-3"
-                 x="602.4375"
-                 id="use228"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-63-6"
-                 x="634.22461"
-                 id="use229"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-65-1"
-                 x="689.20508"
-                 id="use230"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-6e-0"
-                 x="750.72852"
-                 id="use231"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-74-1"
-                 x="814.10742"
-                 id="use232"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-72-2"
-                 x="853.31641"
-                 id="use233"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-              <use
-                 xlink:href="#DejaVuSans-65-1"
-                 x="892.17969"
-                 id="use234"
-                 style="stroke-linecap:butt;stroke-linejoin:round" />
-            </g>
-          </g>
-        </g>
+         transform="translate(-2.5654051e-6,359.09416)">
+        <text
+           xml:space="preserve"
+           style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10px;line-height:10.8364px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold Italic';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:1;fill:#333333;stroke-width:0.216;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+           x="-124.86123"
+           y="47.323841"
+           id="text5"><tspan
+             sodipodi:role="line"
+             id="tspan5"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;line-height:10.8364px;font-family:Calibri;-inkscape-font-specification:Calibri;fill:#000000;stroke-width:0.216"
+             x="-124.86123"
+             y="47.323841">Variant Position</tspan></text>
       </g>
       <text
          xml:space="preserve"
@@ -26411,7 +26049,7 @@
          id="text1"><tspan
            sodipodi:role="line"
            id="tspan1"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:7.99994px;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:1.00063"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:7.99994px;font-family:Calibri;-inkscape-font-specification:'Calibri Italic';stroke-width:1.00063"
            x="-349.57135"
            y="-231.14035">motifA</tspan></text>
       <text
@@ -26422,9 +26060,109 @@
          id="text1-9"><tspan
            sodipodi:role="line"
            id="tspan1-0"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:7.99994px;font-family:Calibri;-inkscape-font-specification:Calibri;stroke-width:1.00063"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:7.99994px;font-family:Calibri;-inkscape-font-specification:'Calibri Italic';stroke-width:1.00063"
            x="-265.49622"
            y="-231.14035">motifI</tspan></text>
+      <g
+         id="g36"
+         transform="translate(3.4565898)">
+        <g
+           id="g31"
+           transform="translate(-65.746823,-12.392243)">
+          <g
+             id="g3"
+             transform="translate(220.80866,376.83966)"
+             style="stroke-linecap:butt;stroke-linejoin:round">
+            <g
+               id="patch_26-7"
+               style="fill:#afc6e9;stroke-linecap:butt;stroke-linejoin:round"
+               transform="translate(-494.07304,-72.472448)">
+              <path
+                 d="m 150.22812,131.78469 h 20 v -7 h -20 z"
+                 style="fill:#afc6e9;stroke-linecap:butt;stroke-linejoin:round"
+                 id="path194-3" />
+            </g>
+          </g>
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.99998px;line-height:10.8365px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:1;fill:#000000;stroke-width:0.216;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+             x="-95.282135"
+             y="435.16409"
+             id="text6"><tspan
+               sodipodi:role="line"
+               id="tspan6"
+               style="stroke-width:0.216"
+               x="-95.282135"
+               y="435.16409">-50 bp</tspan></text>
+        </g>
+        <g
+           id="g15"
+           transform="translate(0.07473881,1.449192)">
+          <g
+             id="g1"
+             transform="translate(-273.93133,276.42483)"
+             style="stroke-linecap:butt;stroke-linejoin:round">
+            <g
+               id="patch_27-9"
+               style="fill:#5f8dd3;stroke-linecap:butt;stroke-linejoin:round">
+              <path
+                 d="m 150.22812,146.46281 h 20 v -7 h -20 z"
+                 style="fill:#5f8dd3;stroke-linecap:butt;stroke-linejoin:round"
+                 id="path211" />
+            </g>
+          </g>
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.99998px;line-height:10.8365px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:1;fill:#000000;stroke-width:0.216;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+             x="-96.151375"
+             y="422.26361"
+             id="text7"><tspan
+               sodipodi:role="line"
+               id="tspan7"
+               style="stroke-width:0.216"
+               x="-96.151375"
+               y="422.26361">centre</tspan></text>
+        </g>
+        <g
+           id="g35"
+           transform="translate(64.016644,-26.52942)">
+          <g
+             id="g2"
+             transform="translate(-273.59785,289.14812)"
+             style="stroke-linecap:butt;stroke-linejoin:round">
+            <g
+               id="patch_28-9"
+               style="fill:#2c5aa0;stroke-linecap:butt;stroke-linejoin:round">
+              <path
+                 d="m 150.22812,161.14094 h 20 v -7 h -20 z"
+                 style="fill:#2c5aa0;stroke-linecap:butt;stroke-linejoin:round"
+                 id="path217" />
+            </g>
+          </g>
+          <text
+             xml:space="preserve"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.99998px;line-height:10.8365px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:1;fill:#000000;stroke-width:0.216;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+             x="-96.053719"
+             y="449.30127"
+             id="text8"><tspan
+               sodipodi:role="line"
+               id="tspan8"
+               style="stroke-width:0.216"
+               x="-96.053719"
+               y="449.30127">+50 bp</tspan></text>
+        </g>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.99998px;line-height:10.8365px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:1;fill:#000000;stroke-width:0.216;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+         x="-407.46686"
+         y="63.437538"
+         id="text11"><tspan
+           sodipodi:role="line"
+           id="tspan11"
+           style="stroke-width:0.216"
+           x="-407.46686"
+           y="63.437538">Perturbations</tspan></text>
     </g>
     <g
        id="g1211"
@@ -26448,11 +26186,11 @@
          x="120.89437"
          y="272.14157" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0.39685;stroke-opacity:1;marker-start:url(#Triangle);paint-order:stroke fill markers"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0.39685;stroke-opacity:1;marker-start:url(#Triangle_reversed);paint-order:stroke fill markers"
          d="m 123.63629,330.87153 c 8.14526,0 0,0 0,0 z"
          id="path1316" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0.39685;stroke-opacity:1;marker-end:url(#Triangle);paint-order:stroke fill markers"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.2;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0.39685;stroke-opacity:1;marker-end:url(#Triangle_F-000000_S-000000);paint-order:stroke fill markers"
          d="m 126.51304,278.34964 c -8.14526,0 0,0 0,0 z"
          id="path1316-7" />
     </g>
@@ -26597,7 +26335,9 @@
          id="tspan207"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;line-height:4.23333px;font-family:Calibri;-inkscape-font-specification:'Calibri Bold';stroke-width:0.152"
          x="42.956295"
-         y="132.70123">How pertrubations to motifI impacts variant effect of 17:44139190:G:C</tspan></text>
+         y="132.70123">How pertrubations to <tspan
+   style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Calibri;-inkscape-font-specification:'Calibri Bold Italic'"
+   id="tspan4">motifI</tspan> impacts variant effect of 17:44139190:G:C</tspan></text>
     <path
        style="fill:#000000;fill-opacity:1;stroke:#e0e0e0;stroke-width:0.376;stroke-miterlimit:0;stroke-dasharray:none;stroke-dashoffset:0.44;stroke-opacity:1;paint-order:stroke fill markers"
        d="m 60.36313,245.00928 c 0,-97.14803 0,-97.74648 0,-97.74648 z"
@@ -29387,16 +29127,6 @@
                      id="path1307" />
                 </g>
                 <g
-                   id="patch_1019"
-                   style="stroke-linecap:butt;stroke-linejoin:round"
-                   transform="matrix(0.23148148,0,0,0.23148148,9.8031655,23.473395)">
-                  <path
-                     d="m 334.04316,392.92 h 1.94853 v -92.37333 h -1.94853 z"
-                     clip-path="url(#p2feec6c869)"
-                     style="opacity:0.4;fill:#90ee90;stroke:#90ee90;stroke-linecap:butt;stroke-linejoin:miter"
-                     id="path1308" />
-                </g>
-                <g
                    id="matplotlib.axis_10"
                    style="stroke-linecap:butt;stroke-linejoin:round"
                    transform="matrix(0.23148148,0,0,0.23148148,9.8031655,23.473395)">
@@ -31357,15 +31087,6 @@
                        clip-path="url(#pd06477558e)"
                        style="fill:#2ca02c;stroke-linecap:butt;stroke-linejoin:round"
                        id="path1651" />
-                  </g>
-                  <g
-                     id="patch_1223"
-                     style="stroke-linecap:butt;stroke-linejoin:round">
-                    <path
-                       d="m 753.87337,392.92 h 1.94854 v -92.37333 h -1.94854 z"
-                       clip-path="url(#pd06477558e)"
-                       style="opacity:0.4;fill:#f08080;stroke:#f08080;stroke-linecap:butt;stroke-linejoin:miter"
-                       id="path1652" />
                   </g>
                   <g
                      id="matplotlib.axis_11"
@@ -33783,15 +33504,6 @@
                    id="path482" />
               </g>
               <g
-                 id="patch_407"
-                 style="stroke-linecap:butt;stroke-linejoin:round">
-                <path
-                   d="m 559.01977,119.25333 h 1.94853 V 26.88 h -1.94853 z"
-                   clip-path="url(#p336376030b)"
-                   style="opacity:0.4;fill:#f08080;stroke:#f08080;stroke-linecap:butt;stroke-linejoin:miter"
-                   id="path483" />
-              </g>
-              <g
                  id="patch_408"
                  style="stroke:#6f7c91;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1">
                 <path
@@ -35964,24 +35676,15 @@
                    id="path203" />
               </g>
               <g
-                 id="patch_203"
-                 style="stroke-linecap:butt;stroke-linejoin:round"
-                 transform="translate(0.97194667,-534.4991)">
-                <path
-                   d="m 139.18955,119.25333 h 1.94854 V 26.88 h -1.94854 z"
-                   clip-path="url(#pa132fb0df4)"
-                   style="opacity:0.4;fill:#90ee90;stroke:#90ee90;stroke-linecap:butt;stroke-linejoin:miter"
-                   id="path204" />
-              </g>
-              <g
                  id="patch_203-4"
                  style="fill:#ffeeaa;stroke:none;stroke-linecap:butt;stroke-linejoin:round"
-                 transform="matrix(7.053134,0,0,1,-845.59884,-534.84608)">
+                 transform="matrix(7.053134,0,0,1,-845.59884,-507.41408)">
                 <path
                    d="m 139.18955,119.25333 h 1.94854 V 26.88 h -1.94854 z"
                    clip-path="url(#pa132fb0df4-4)"
                    style="opacity:0.4;fill:#ffeeaa;stroke:none;stroke-linecap:butt;stroke-linejoin:miter"
-                   id="path204-0" />
+                   id="path204-0"
+                   transform="translate(0,-27.432)" />
               </g>
               <g
                  id="patch_203-4-6"
@@ -38008,15 +37711,6 @@
                    id="path753" />
               </g>
               <g
-                 id="patch_611"
-                 style="stroke-linecap:butt;stroke-linejoin:round">
-                <path
-                   d="m 236.61636,256.08667 h 1.94853 v -92.37334 h -1.94853 z"
-                   clip-path="url(#pb4de5adeb3)"
-                   style="opacity:0.4;fill:#90ee90;stroke:#90ee90;stroke-linecap:butt;stroke-linejoin:miter"
-                   id="path754" />
-              </g>
-              <g
                  id="matplotlib.axis_6"
                  style="stroke-linecap:butt;stroke-linejoin:round">
                 <g
@@ -39977,15 +39671,6 @@
                    id="path1034" />
               </g>
               <g
-                 id="patch_815"
-                 style="stroke-linecap:butt;stroke-linejoin:round">
-                <path
-                   d="m 656.44657,256.08667 h 1.94854 v -92.37334 h -1.94854 z"
-                   clip-path="url(#p6e7875e251)"
-                   style="opacity:0.4;fill:#f08080;stroke:#f08080;stroke-linecap:butt;stroke-linejoin:miter"
-                   id="path1035" />
-              </g>
-              <g
                  id="patch_816"
                  style="fill:none;stroke:#6f7c91;stroke-linecap:butt;stroke-linejoin:round;stroke-opacity:1">
                 <path
@@ -40151,12 +39836,13 @@
           <g
              id="patch_203-4-4"
              style="fill:#ffeeaa;stroke:none;stroke-linecap:butt;stroke-linejoin:round"
-             transform="matrix(7.053134,0,0,1,-328.23393,-391.01992)">
+             transform="matrix(7.053134,0,0,1,-328.23393,-377.30392)">
             <path
                d="m 139.18955,119.25333 h 1.94854 V 26.88 h -1.94854 z"
                clip-path="url(#pa132fb0df4-4-3)"
                style="opacity:0.4;fill:#ffeeaa;stroke:none;stroke-linecap:butt;stroke-linejoin:miter"
-               id="path204-0-87" />
+               id="path204-0-87"
+               transform="translate(0,-13.716)" />
           </g>
           <g
              id="patch_203-4-6-8"
@@ -40213,5 +39899,16 @@
            id="path204-0-8-0" />
       </g>
     </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777px;line-height:3.82286px;font-family:Calibri;-inkscape-font-specification:Calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.5;fill:#000000;stroke-width:0.0762;stroke-miterlimit:16.7;paint-order:stroke fill markers"
+       x="238.04465"
+       y="220.38655"
+       id="text13"><tspan
+         sodipodi:role="line"
+         id="tspan13"
+         style="stroke-width:0.0762"
+         x="238.04465"
+         y="220.38655">s</tspan></text>
   </g>
 </svg>

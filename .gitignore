@@ -1,4 +1,6 @@
 data/
 outputs/
 dcgm-gpu-stats*
-figures/._*
+figures/
+**/__pycache__/
+*.pyc

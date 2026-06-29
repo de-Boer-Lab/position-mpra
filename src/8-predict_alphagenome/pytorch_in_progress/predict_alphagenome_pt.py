@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import os
+from dotenv import load_dotenv
 from tqdm import tqdm
 
 # ── Paths ──────────────────────────────────────────────────────────────────
@@ -15,7 +16,8 @@ PRED_DIR = f"{DATA_DIR}/predictions"
 os.makedirs(PRED_DIR, exist_ok=True)
 
 # ── API ────────────────────────────────────────────────────────────────────
-API_KEY = "ALPHAGENOME_API_KEY_REMOVED"
+load_dotenv()
+API_KEY = os.environ["ALPHAGENOME_API_KEY"]
 model = dna_client.create(API_KEY)
 
 # ── Tissue / ontology terms ────────────────────────────────────────────────

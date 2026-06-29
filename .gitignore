@@ -1,5 +1,6 @@
 data/
 outputs/
+.env
 dcgm-gpu-stats*
 figures/
 **/__pycache__/

@@ -13,7 +13,10 @@ This repository contains the analysis code and supporting materials for studying
     ├── 3-cluster_variant_effects
     ├── 4-range_variant_effect_TFs
     ├── 5-TF_position
-    └── 6-ism_variant_effects
+    ├── 6-ism_variant_effects
+    ├── 7-investigating_sines
+    ├── 8-predict_alphagenome
+    └── 9-schematic
 ```
 
 ## Environment and Setup
@@ -31,5 +34,4 @@ conda activate variant-context
 If you use this code, please cite:
 
 > Position-dependent variant effects reveal the importance of context in genomic regulation.
-
-(Preprint / manuscript details to be added.)
+> bioRxiv. https://doi.org/10.64898/2026.03.17.712488

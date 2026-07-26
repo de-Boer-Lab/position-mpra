@@ -23,6 +23,8 @@
 # computes exon2 variant effect per gene per condition, and writes:
 #   exon2_variant_effect.tsv   -- tidy long-format table (gene, condition, length, exon2_ve)
 #   exon2_variant_effect_boxplot.png
+#   exon2_variant_effect_heatmap.png -- one heatmap per insertion length (25/50/75/100bp),
+#     rows = genes, columns = no insertion / random at -100 / random at -200
 
 source ~/.bashrc
 conda activate dream_rocky_3

@@ -23,10 +23,12 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 
 PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/all_k562_promoters"
 DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
 DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.png"
+DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
@@ -42,6 +44,15 @@ LABELS = {
     "upstream": "Upstream insertion (-200)",
     "downstream": "Downstream insertion (-100)",
 }
+
+# Column order for the heatmap: no random sequence, then -100 (downstream), then -200 (upstream).
+HEATMAP_CONDITIONS = ["baseline", "downstream", "upstream"]
+HEATMAP_COLUMN_LABELS = ["None", "-100", "-200"]
+
+# Diverging pair (dataviz skill default): blue <-> red, gray midpoint at 0.
+DIVERGING_CMAP = LinearSegmentedColormap.from_list(
+    "blue_gray_red", ["#2a78d6", "#f0efec", "#e34948"], N=256
+)
 
 
 def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
@@ -143,12 +154,68 @@ def plot(df: pd.DataFrame, out_path: str) -> None:
     print(f"Saved {out_path}")
 
 
+def plot_heatmap(df: pd.DataFrame, out_path: str) -> None:
+    """Small multiples: one heatmap per insertion length, rows = genes with that
+    length category, columns = no random sequence / random at -100 / random at
+    -200. Each gene has exactly one length_category, so the four panels
+    partition all genes (they do not repeat a gene at multiple lengths)."""
+    baseline_ve = df.loc[df["condition"] == "baseline"].set_index("gene")["exon2_ve"]
+
+    panels = []
+    for length in LENGTH_CATEGORIES:
+        genes = sorted(df.loc[df["length"] == length, "gene"].unique())
+        sub = df[(df["length"] == length) | (df["condition"] == "baseline")]
+        sub = sub[sub["gene"].isin(genes)]
+        pivot = sub.pivot_table(index="gene", columns="condition", values="exon2_ve")
+        pivot = pivot.reindex(columns=HEATMAP_CONDITIONS)
+        pivot = pivot.loc[baseline_ve.reindex(pivot.index).sort_values(ascending=False).index]
+        panels.append((length, pivot))
+
+    vmax = max(np.nanpercentile(np.abs(p.values), 99) for _, p in panels)
+    vmax = max(vmax, 1e-12)
+    norm = TwoSlopeNorm(vmin=-vmax, vcenter=0.0, vmax=vmax)
+
+    fig, axes = plt.subplots(1, len(panels), figsize=(2.6 * len(panels), 8), sharey=False)
+    im = None
+    for ax, (length, pivot) in zip(axes, panels, strict=True):
+        im = ax.imshow(
+            pivot.values,
+            aspect="auto",
+            cmap=DIVERGING_CMAP,
+            norm=norm,
+            interpolation="nearest",
+        )
+        ax.set_xticks(range(len(HEATMAP_CONDITIONS)))
+        ax.set_xticklabels(HEATMAP_COLUMN_LABELS, fontsize=8)
+        ax.set_title(f"{length} bp insertion\n(n={len(pivot)} genes)", fontsize=10)
+        ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+    axes[0].set_ylabel("Genes (sorted by no-insertion effect)")
+
+    fig.suptitle("Exon2 variant effect by insertion length and position", y=1.02)
+    fig.text(
+        0.5,
+        -0.02,
+        "Columns: no random sequence / random sequence inserted at -100 / at -200 (bp relative to TSS)",
+        ha="center",
+        fontsize=9,
+        color="#52514e",
+    )
+    cbar = fig.colorbar(im, ax=axes, shrink=0.6, pad=0.02)
+    cbar.set_label("Exon2 variant effect  (mean(ref - alt))")
+
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    print(f"Saved {out_path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Exon2 variant-effect boxplot vs. insertion length/position."
     )
     parser.add_argument("--predictions_dir", default=DEFAULT_PREDICTIONS_DIR)
     parser.add_argument("--out", default=DEFAULT_OUT)
+    parser.add_argument("--heatmap_out", default=DEFAULT_HEATMAP_OUT)
     args = parser.parse_args()
 
     df = compute_exon2_ve(args.predictions_dir)
@@ -156,6 +223,7 @@ def main() -> None:
         os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv"), sep="\t", index=False
     )
     plot(df, args.out)
+    plot_heatmap(df, args.heatmap_out)
 
 
 if __name__ == "__main__":

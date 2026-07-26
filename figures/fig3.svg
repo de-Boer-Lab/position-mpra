@@ -27,9 +27,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.84945275"
-     inkscape:cx="417.91612"
-     inkscape:cy="439.10624"
+     inkscape:zoom="0.60353591"
+     inkscape:cx="536.83632"
+     inkscape:cy="579.91578"
      inkscape:window-width="1384"
      inkscape:window-height="847"
      inkscape:window-x="56"
@@ -35150,9 +35150,9 @@
          transform="translate(0.90046501,22.5)"><tspan
            x="16.326326"
            y="20.323732"
-           id="tspan6"><tspan
+           id="tspan10"><tspan
              style="font-weight:bold;-inkscape-font-specification:'calibri Bold';stroke-width:0.751181"
-             id="tspan5">b</tspan></tspan></text><text
+             id="tspan9">b</tspan></tspan></text><text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:20px;line-height:1;font-family:calibri;-inkscape-font-specification:calibri;text-align:start;word-spacing:0.1875px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#1a1a1a;fill-opacity:1;stroke:none;stroke-width:0.751178;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
          x="13.255259"
@@ -36699,7 +36699,7 @@
            id="tspan2737"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:calibri;-inkscape-font-specification:calibri;stroke:none;stroke-width:0.850394"
            x="430.38953"
-           y="-26.913349">∆ = WT - TF<tspan
+           y="-26.913349">∆KO = WT - TFBS<tspan
    style="font-size:65%;baseline-shift:sub"
    id="tspan2738">knockout</tspan></tspan></text><text
          xml:space="preserve"
@@ -36714,14 +36714,14 @@
            y="-41.654953" /></text><text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.99998px;line-height:9.99998px;font-family:calibri;-inkscape-font-specification:calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:none;stroke-width:0.850395;stroke-miterlimit:8.9;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
-         x="366.20102"
-         y="-37.624172"
+         x="361.73569"
+         y="-35.836079"
          id="text2740"><tspan
            sodipodi:role="line"
            id="tspan2740"
            style="stroke-width:0.850394"
-           x="366.20102"
-           y="-37.624172">dream-rnn</tspan></text><text
+           x="361.73569"
+           y="-35.836079">DREAM-RNN</tspan></text><text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.99998px;line-height:9.99998px;font-family:calibri;-inkscape-font-specification:calibri;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:none;stroke-width:0.850395;stroke-miterlimit:8.9;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
          x="356.23032"
@@ -36731,4 +36731,4 @@
            id="tspan2741"
            style="stroke-width:0.850394"
            x="356.23032"
-           y="-13.293461">knockout effect</tspan></text></g></g></svg>
+           y="-13.293461" /></text></g></g></svg>

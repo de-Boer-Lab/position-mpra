@@ -5,3 +5,4 @@ dcgm-gpu-stats*
 figures/
 **/__pycache__/
 *.pyc
+*.vscode

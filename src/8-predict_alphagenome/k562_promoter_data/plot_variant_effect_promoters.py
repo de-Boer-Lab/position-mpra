@@ -225,47 +225,48 @@ def plot_correlation_heatmap(
     df: pd.DataFrame,
     out_path: str,
     condition: str,
-    col_labels: list,
-    x_label: str,
-    row_label: str,
+    labels: list,
+    axis_label: str,
     condition_label: str,
 ) -> None:
-    """1-row heatmap: Pearson R^2 between the no-insertion (baseline) exon2 VE
-    and the exon2 VE for `condition`, one column per insertion length plus a
-    rightmost reference column for no random sequence (length 0, trivially
-    R^2=1 since it is baseline correlated with itself)."""
+    """Lower-triangle heatmap of all-by-all Pearson R^2 between exon2 VE at
+    each insertion length for `condition`, plus the no-insertion baseline
+    (length 0). The upper triangle is masked out since the matrix is
+    symmetric."""
     lengths_order = [100, 75, 50, 25, 0]
-    baseline_ve = df.loc[df["condition"] == "baseline"].set_index("gene")["exon2_ve"]
+    n = len(lengths_order)
 
-    r2_values, n_values = [], []
+    series = {}
     for length in lengths_order:
         cond = "baseline" if length == 0 else condition
-        sub = df[(df["condition"] == cond) & (df["length"] == length)]
-        x = baseline_ve.reindex(sub["gene"]).values
-        y = sub["exon2_ve"].values
-        r = np.corrcoef(x, y)[0, 1]
-        r2_values.append(r**2)
-        n_values.append(len(sub))
+        series[length] = df.loc[
+            (df["condition"] == cond) & (df["length"] == length)
+        ].set_index("gene")["exon2_ve"]
 
-    data = np.array(r2_values).reshape(1, -1)
+    r2_matrix = np.full((n, n), np.nan)
+    for i, li in enumerate(lengths_order):
+        for j, lj in enumerate(lengths_order):
+            if j > i:
+                continue
+            genes = series[li].index.intersection(series[lj].index)
+            x = series[li].reindex(genes).values
+            y = series[lj].reindex(genes).values
+            r2_matrix[i, j] = np.corrcoef(x, y)[0, 1] ** 2
 
-    fig, ax = plt.subplots(figsize=(1.6 * len(lengths_order) + 1, 2.6))
-    im = ax.imshow(data, aspect="auto", cmap=SEQUENTIAL_BLUE_CMAP, vmin=0, vmax=1)
+    masked = np.ma.masked_invalid(r2_matrix)
+    cmap = SEQUENTIAL_BLUE_CMAP.copy()
+    cmap.set_bad(color="none")
 
-    ax.set_xticks(range(len(lengths_order)))
-    ax.set_xticklabels(col_labels)
-    ax.set_xlabel(x_label)
-    ax.set_yticks([0])
-    ax.set_yticklabels([row_label])
-    ax.set_title(
-        f"Correlation with no-insertion exon2 variant effect\n(Pearson R$^2$, {condition_label})"
-    )
+    fig, ax = plt.subplots(figsize=(1.2 * n + 1, 1.2 * n + 1))
+    im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
 
-    for j, (r2, n) in enumerate(zip(r2_values, n_values)):
-        text_color = "white" if r2 > 0.6 else "#0b0b0b"
-        ax.text(
-            j, 0, f"R$^2$={r2:.2f}\nn={n}", ha="center", va="center", fontsize=9, color=text_color
-        )
+    ax.set_xticks(range(n))
+    ax.set_xticklabels(labels)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(labels)
+    ax.set_xlabel(axis_label)
+    ax.set_ylabel(axis_label)
+    ax.set_title(f"Pairwise correlation of exon2 variant effect\n(Pearson R$^2$, {condition_label})")
 
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -304,18 +305,16 @@ def main() -> None:
         df,
         args.corr_out,
         condition="downstream",
-        col_labels=[str(-(150 + length)) for length in lengths_order],
-        x_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
-        row_label="Downstream\ninsertion",
+        labels=[str(-(150 + length)) for length in lengths_order],
+        axis_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
         condition_label="downstream insertion",
     )
     plot_correlation_heatmap(
         df,
         args.corr_upstream_out,
         condition="upstream",
-        col_labels=[str(length) for length in lengths_order],
-        x_label="Random sequence added upstream of the variant (bp)",
-        row_label="Upstream\ninsertion",
+        labels=[str(length) for length in lengths_order],
+        axis_label="Random sequence added upstream of the variant (bp)",
         condition_label="upstream insertion",
     )
 

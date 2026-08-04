@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+from tqdm import tqdm
 
 PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/all_k562_promoters"
 DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
@@ -76,7 +77,7 @@ def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
         alt = np.load(os.path.join(predictions_dir, f"{condition}_alt.npy"), mmap_mode="r")
         assert ref.shape[0] == n, f"{condition}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
 
-        for i, row in meta.iterrows():
+        for i, row in tqdm(meta.iterrows(), total=n, desc=condition):
             s, e = int(row["exon2_start_offset"]), int(row["exon2_end_offset"])
             ve = float(
                 ref[i, s:e].astype(np.float32).mean() - alt[i, s:e].astype(np.float32).mean()
@@ -288,10 +289,13 @@ def main() -> None:
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
     args = parser.parse_args()
 
-    df = compute_exon2_ve(args.predictions_dir)
-    df.to_csv(
-        os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv"), sep="\t", index=False
-    )
+    ve_path = os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv")
+    if os.path.exists(ve_path):
+        print(f"Found existing {ve_path}, skipping VE computation")
+        df = pd.read_csv(ve_path, sep="\t")
+    else:
+        df = compute_exon2_ve(args.predictions_dir)
+        df.to_csv(ve_path, sep="\t", index=False)
     plot(df, args.out)
     plot_heatmap(df, args.heatmap_out)
 

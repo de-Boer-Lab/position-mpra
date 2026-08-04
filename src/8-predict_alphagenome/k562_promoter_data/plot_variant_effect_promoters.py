@@ -289,10 +289,13 @@ def main() -> None:
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
     args = parser.parse_args()
 
-    df = compute_exon2_ve(args.predictions_dir)
-    df.to_csv(
-        os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv"), sep="\t", index=False
-    )
+    ve_path = os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv")
+    if os.path.exists(ve_path):
+        print(f"Found existing {ve_path}, skipping VE computation")
+        df = pd.read_csv(ve_path, sep="\t")
+    else:
+        df = compute_exon2_ve(args.predictions_dir)
+        df.to_csv(ve_path, sep="\t", index=False)
     plot(df, args.out)
     plot_heatmap(df, args.heatmap_out)
 

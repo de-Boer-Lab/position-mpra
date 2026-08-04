@@ -1,5 +1,8 @@
 data/
 outputs/
+*archive/
+archive/
+**/archive/
 .env
 dcgm-gpu-stats*
 figures/

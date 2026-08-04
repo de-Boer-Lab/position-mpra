@@ -11,6 +11,10 @@ y = exon2 variant effect
 color = condition (baseline / upstream -200bp / downstream -100bp insertion)
 each point = one gene
 
+Also produces two correlation heatmaps (Pearson R^2 between the no-insertion
+exon2 VE and the exon2 VE at each insertion length, one for downstream, one
+for upstream).
+
 Usage
 -----
   python plot_variant_effect_promoters.py
@@ -29,6 +33,8 @@ PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome
 DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
 DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.png"
 DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
+DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.png"
+DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.png"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
@@ -52,6 +58,11 @@ HEATMAP_COLUMN_LABELS = ["None", "-100", "-200"]
 # Diverging pair (dataviz skill default): blue <-> red, gray midpoint at 0.
 DIVERGING_CMAP = LinearSegmentedColormap.from_list(
     "blue_gray_red", ["#2a78d6", "#f0efec", "#e34948"], N=256
+)
+
+# Sequential white->blue ramp for a 0-1 magnitude (R^2), matching plot_agarwal.ipynb.
+SEQUENTIAL_BLUE_CMAP = LinearSegmentedColormap.from_list(
+    "sequential_blue", ["#ffffff", "#3361A5"], N=256
 )
 
 
@@ -209,6 +220,63 @@ def plot_heatmap(df: pd.DataFrame, out_path: str) -> None:
     print(f"Saved {out_path}")
 
 
+def plot_correlation_heatmap(
+    df: pd.DataFrame,
+    out_path: str,
+    condition: str,
+    col_labels: list,
+    x_label: str,
+    row_label: str,
+    condition_label: str,
+) -> None:
+    """1-row heatmap: Pearson R^2 between the no-insertion (baseline) exon2 VE
+    and the exon2 VE for `condition`, one column per insertion length plus a
+    rightmost reference column for no random sequence (length 0, trivially
+    R^2=1 since it is baseline correlated with itself)."""
+    lengths_order = [100, 75, 50, 25, 0]
+    baseline_ve = df.loc[df["condition"] == "baseline"].set_index("gene")["exon2_ve"]
+
+    r2_values, n_values = [], []
+    for length in lengths_order:
+        cond = "baseline" if length == 0 else condition
+        sub = df[(df["condition"] == cond) & (df["length"] == length)]
+        x = baseline_ve.reindex(sub["gene"]).values
+        y = sub["exon2_ve"].values
+        r = np.corrcoef(x, y)[0, 1]
+        r2_values.append(r**2)
+        n_values.append(len(sub))
+
+    data = np.array(r2_values).reshape(1, -1)
+
+    fig, ax = plt.subplots(figsize=(1.6 * len(lengths_order) + 1, 2.6))
+    im = ax.imshow(data, aspect="auto", cmap=SEQUENTIAL_BLUE_CMAP, vmin=0, vmax=1)
+
+    ax.set_xticks(range(len(lengths_order)))
+    ax.set_xticklabels(col_labels)
+    ax.set_xlabel(x_label)
+    ax.set_yticks([0])
+    ax.set_yticklabels([row_label])
+    ax.set_title(
+        f"Correlation with no-insertion exon2 variant effect\n(Pearson R$^2$, {condition_label})"
+    )
+
+    for j, (r2, n) in enumerate(zip(r2_values, n_values)):
+        text_color = "white" if r2 > 0.6 else "#0b0b0b"
+        ax.text(
+            j, 0, f"R$^2$={r2:.2f}\nn={n}", ha="center", va="center", fontsize=9, color=text_color
+        )
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.03)
+    cbar.set_label("Pearson R$^2$")
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    print(f"Saved {out_path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Exon2 variant-effect boxplot vs. insertion length/position."
@@ -216,6 +284,8 @@ def main() -> None:
     parser.add_argument("--predictions_dir", default=DEFAULT_PREDICTIONS_DIR)
     parser.add_argument("--out", default=DEFAULT_OUT)
     parser.add_argument("--heatmap_out", default=DEFAULT_HEATMAP_OUT)
+    parser.add_argument("--corr_out", default=DEFAULT_CORR_OUT)
+    parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
     args = parser.parse_args()
 
     df = compute_exon2_ve(args.predictions_dir)
@@ -224,6 +294,26 @@ def main() -> None:
     )
     plot(df, args.out)
     plot_heatmap(df, args.heatmap_out)
+
+    lengths_order = [100, 75, 50, 25, 0]
+    plot_correlation_heatmap(
+        df,
+        args.corr_out,
+        condition="downstream",
+        col_labels=[str(-(150 + length)) for length in lengths_order],
+        x_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
+        row_label="Downstream\ninsertion",
+        condition_label="downstream insertion",
+    )
+    plot_correlation_heatmap(
+        df,
+        args.corr_upstream_out,
+        condition="upstream",
+        col_labels=[str(length) for length in lengths_order],
+        x_label="Random sequence added upstream of the variant (bp)",
+        row_label="Upstream\ninsertion",
+        condition_label="upstream insertion",
+    )
 
 
 if __name__ == "__main__":

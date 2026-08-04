@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+from tqdm import tqdm
 
 PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/all_k562_promoters"
 DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
@@ -76,7 +77,7 @@ def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
         alt = np.load(os.path.join(predictions_dir, f"{condition}_alt.npy"), mmap_mode="r")
         assert ref.shape[0] == n, f"{condition}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
 
-        for i, row in meta.iterrows():
+        for i, row in tqdm(meta.iterrows(), total=n, desc=condition):
             s, e = int(row["exon2_start_offset"]), int(row["exon2_end_offset"])
             ve = float(
                 ref[i, s:e].astype(np.float32).mean() - alt[i, s:e].astype(np.float32).mean()

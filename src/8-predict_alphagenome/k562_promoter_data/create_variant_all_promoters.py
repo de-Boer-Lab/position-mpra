@@ -8,13 +8,15 @@ Experiment design
 ------------------
 For every gene:
   - A fixed-transition substitution (A<->G, C<->T) is introduced at TSS-150.
-  - Three conditions are predicted (ref + alt each), all sharing the same
+  - Nine conditions are predicted (ref + alt each), all sharing the same
     -150 variant:
-      baseline    no insertion
-      upstream    K random bp inserted at TSS-200
-      downstream  K random bp inserted at TSS-100
-  - K (the insertion length) is one of {25, 50, 75, 100}, assigned once per
-    gene so the four length categories are balanced (~equal gene counts).
+      baseline           no insertion
+      upstream_{K}        K random bp inserted at TSS-200, for K in {25,50,75,100}
+      downstream_{K}       K random bp inserted at TSS-100, for K in {25,50,75,100}
+  - Every gene is tested at every insertion length (K) at both positions --
+    unlike an earlier version of this script, K is no longer assigned once
+    per gene; each gene gets the full 4x2 grid, so both the position effect
+    and the length effect are measured within the same gene.
   - K random bp are inserted at the anchor point and K bp are trimmed off the
     far upstream edge of the window (52,429 bp away from TSS -- harmless),
     keeping the window fixed at MODEL_LEN and leaving TSS/exon1/exon2 at a
@@ -24,12 +26,13 @@ For every gene:
     window -- this doesn't matter for analysis since only exon2 (which never
     moves) is summarized downstream.
   - Random insertion content: each gene draws its OWN random K-bp sequence
-    (seeded per-gene, so different genes don't share identical inserted
-    sequence -- avoids one unlucky random string, e.g. one that happens to
-    create/destroy a motif, systematically biasing every gene). The SAME
-    per-gene sequence is reused at both -200 and -100 for that gene, so the
-    upstream-vs-downstream comparison isolates the effect of insertion
-    POSITION, not a confound from different inserted content.
+    for each length K (seeded per-gene-per-length, so different genes don't
+    share identical inserted sequence -- avoids one unlucky random string,
+    e.g. one that happens to create/destroy a motif, systematically biasing
+    every gene). The SAME per-gene-per-length sequence is reused at both
+    -200 and -100 for that gene, so the upstream-vs-downstream comparison at
+    a given K isolates the effect of insertion POSITION, not a confound from
+    different inserted content.
 
 Sequences are always built in TRANSCRIPT orientation (reverse-complemented
 for minus-strand genes before any offset math), so TSS sits at a fixed
@@ -43,11 +46,24 @@ Saved to {OUTPUT_DIR}/predictions/:
   promoters_metadata.tsv
       one row per included gene: gene, transcript_id, chrom, strand,
       window_start_genomic, tss_offset, variant_offset, ref, alt,
-      upstream_ins_offset, downstream_ins_offset, length_category,
+      upstream_ins_offset, downstream_ins_offset,
+      insertion_seq_25, insertion_seq_50, insertion_seq_75, insertion_seq_100,
       exon2_start_offset, exon2_end_offset
-  {condition}_ref.npy, {condition}_alt.npy   for condition in baseline/upstream/downstream
+  {condition_key}_ref.npy, {condition_key}_alt.npy   for condition_key in CONDITION_KEYS
+      (baseline, upstream_25, upstream_50, upstream_75, upstream_100,
+      downstream_25, downstream_50, downstream_75, downstream_100)
       memory-mapped (n_genes, 131_072) float16 arrays, HepG2 track, forward strand only.
-  done_mask.npy   (n_genes, 3) bool memmap -- columns = [baseline, upstream, downstream]
+  done_mask.npy   (n_genes, 9) bool memmap -- columns = CONDITION_KEYS, in that order
+
+Migration note: if promoters_metadata.tsv / done_mask.npy already exist from
+the earlier one-length-per-gene version of this script, setup() detects the
+schema change (missing insertion_seq_{K} columns / wrong done_mask width) and
+rebuilds them. baseline_ref.npy/baseline_alt.npy are untouched by the length
+change and are reused as-is (with per-gene done_mask carried forward) since
+baseline never depended on K. The old upstream_ref.npy/upstream_alt.npy/
+downstream_ref.npy/downstream_alt.npy (single-length-per-gene) become orphaned
+under the new schema -- setup() will print their paths so you can delete them
+manually once you no longer need the old run.
 
 Two-phase, SLURM-array-safe (same race-avoidance pattern as predict_alphagenome_ldlr.py):
   1. Setup (once, no GPU): builds metadata + preallocates files.
@@ -92,8 +108,14 @@ TSS_OFFSET = UPSTREAM_LEN  # TSS sits at this offset in every transcript-oriente
 VARIANT_REL_POS = 150  # TSS - 150
 UPSTREAM_INS_REL_POS = 200  # TSS - 200
 DOWNSTREAM_INS_REL_POS = 100  # TSS - 100
-LENGTH_CATEGORIES = [25, 50, 75, 100]
-CONDITIONS = ["baseline", "upstream", "downstream"]
+LENGTH_CATEGORIES = [25, 50, 75, 100]  # insertion lengths tested on every gene
+
+# baseline, upstream_25, upstream_50, upstream_75, upstream_100,
+# downstream_25, downstream_50, downstream_75, downstream_100 (9 total).
+# baseline stays first so done_mask migration can carry its column forward.
+CONDITION_KEYS = ["baseline"] + [
+    f"{position}_{k}" for position in ("upstream", "downstream") for k in LENGTH_CATEGORIES
+]
 
 DTYPE = np.float16
 RNG_SEED = 42
@@ -210,23 +232,16 @@ def build_metadata() -> pd.DataFrame:
     df["upstream_ins_offset"] = TSS_OFFSET - UPSTREAM_INS_REL_POS
     df["downstream_ins_offset"] = TSS_OFFSET - DOWNSTREAM_INS_REL_POS
 
-    # Balanced random assignment to the 4 length categories.
+    # Per-gene random insertion sequence, one independent draw per length K
+    # (own draw per gene per K, reused for both -200 and -100 at that K so
+    # upstream/downstream differ only in position, not content). Drawn in
+    # fixed row order, one length at a time, for reproducibility.
     rng = np.random.default_rng(RNG_SEED)
     n = len(df)
-    cats = np.resize(LENGTH_CATEGORIES, n)
-    # pad to exact length then trim, resize already tiles evenly; shuffle for randomness
-    idx = rng.permutation(n)
-    cats_shuffled = np.empty(n, dtype=int)
-    cats_shuffled[idx] = cats
-    df["length_category"] = cats_shuffled
-
-    # Per-gene random insertion sequence (own draw per gene, reused for both
-    # -200 and -100 in that gene so upstream/downstream differ only in
-    # position, not content). Drawn in fixed row order for reproducibility.
-    df["insertion_seq"] = [
-        "".join(np.array(list("ACGT"))[rng.integers(0, 4, size=int(k))])
-        for k in df["length_category"]
-    ]
+    for k in LENGTH_CATEGORIES:
+        df[f"insertion_seq_{k}"] = [
+            "".join(np.array(list("ACGT"))[rng.integers(0, 4, size=k)]) for _ in range(n)
+        ]
 
     # Reference/alt allele via fixed transition rule -- filled in during setup
     # once the reference genome is available (needs the actual ref base at
@@ -246,7 +261,7 @@ def fetch_ref_and_alt(fa: Fasta, row: pd.Series) -> tuple:
     return seq, ref_base, alt_base
 
 
-# ── Sequence construction for the 3 conditions ──────────────────────────────
+# ── Sequence construction for the 9 conditions ──────────────────────────────
 
 
 def build_variant_seq(seq: str, variant_offset: int, allele: str) -> str:
@@ -268,14 +283,17 @@ def build_insertion_seq(seq: str, insertion_offset: int, k: int, insertion_seq: 
     return out
 
 
-def sequences_for_condition(seq_ref: str, seq_alt: str, condition: str, row: pd.Series) -> tuple:
-    if condition == "baseline":
+def sequences_for_condition(
+    seq_ref: str, seq_alt: str, condition_key: str, row: pd.Series
+) -> tuple:
+    if condition_key == "baseline":
         return seq_ref, seq_alt
-    k = int(row["length_category"])
-    insertion_seq = row["insertion_seq"]
+    position, k_str = condition_key.rsplit("_", 1)
+    k = int(k_str)
+    insertion_seq = row[f"insertion_seq_{k}"]
     anchor = (
         int(row["upstream_ins_offset"])
-        if condition == "upstream"
+        if position == "upstream"
         else int(row["downstream_ins_offset"])
     )
     return (
@@ -319,10 +337,21 @@ def setup(max_genes: int = None, out_dir: str = None) -> pd.DataFrame:
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(out_dir, exist_ok=True)
 
+    expected_seq_cols = {f"insertion_seq_{k}" for k in LENGTH_CATEGORIES}
+    df = None
     if os.path.exists(METADATA_TSV):
-        df = pd.read_csv(METADATA_TSV, sep="\t")
-        print(f"Reusing existing metadata: {METADATA_TSV} ({len(df)} genes)")
-    else:
+        existing = pd.read_csv(METADATA_TSV, sep="\t")
+        if expected_seq_cols.issubset(existing.columns):
+            df = existing
+            print(f"Reusing existing metadata: {METADATA_TSV} ({len(df)} genes)")
+        else:
+            print(
+                f"{METADATA_TSV} uses the old one-length-per-gene schema "
+                f"(missing {sorted(expected_seq_cols - set(existing.columns))}) -- "
+                "rebuilding metadata for the new all-lengths-per-gene design"
+            )
+
+    if df is None:
         df = build_metadata()
         with Fasta(REF_FASTA) as fa:
             refs, alts = [], []
@@ -334,15 +363,15 @@ def setup(max_genes: int = None, out_dir: str = None) -> pd.DataFrame:
         df["alt"] = alts
         df.to_csv(METADATA_TSV, sep="\t", index=False)
         print(f"Wrote metadata: {METADATA_TSV} ({len(df)} genes)")
-        print(df["length_category"].value_counts().sort_index())
 
     if max_genes is not None:
         df = df.iloc[:max_genes].reset_index(drop=True)
 
     n = len(df)
-    for condition in CONDITIONS:
+    orphaned = []
+    for condition_key in CONDITION_KEYS:
         for name in ("ref", "alt"):
-            path = os.path.join(out_dir, f"{condition}_{name}.npy")
+            path = os.path.join(out_dir, f"{condition_key}_{name}.npy")
             if os.path.exists(path):
                 arr = np.lib.format.open_memmap(path, mode="r+")
                 assert arr.shape == (n, MODEL_LEN), (
@@ -350,18 +379,48 @@ def setup(max_genes: int = None, out_dir: str = None) -> pd.DataFrame:
                 )
             else:
                 np.lib.format.open_memmap(path, mode="w+", dtype=DTYPE, shape=(n, MODEL_LEN))
+    # Old single-length-per-gene run left these behind; the new schema never
+    # reads them (baseline_*.npy is reused above; upstream_*.npy/downstream_*.npy
+    # without a _{K} suffix are now orphaned).
+    for condition in ("upstream", "downstream"):
+        for name in ("ref", "alt"):
+            path = os.path.join(out_dir, f"{condition}_{name}.npy")
+            if os.path.exists(path):
+                orphaned.append(path)
+    if orphaned:
+        print("Orphaned files from the old schema (safe to delete once no longer needed):")
+        for path in orphaned:
+            print(f"  {path}")
 
     done_mask_path = os.path.join(out_dir, "done_mask.npy")
     if os.path.exists(done_mask_path):
-        done_mask = np.lib.format.open_memmap(done_mask_path, mode="r+")
-        assert done_mask.shape == (n, len(CONDITIONS))
+        old_done_mask = np.load(done_mask_path, mmap_mode="r")
+        if old_done_mask.shape == (n, len(CONDITION_KEYS)):
+            done_mask = np.lib.format.open_memmap(done_mask_path, mode="r+")
+        else:
+            # baseline is unaffected by the length change, so carry its
+            # completed-gene flags forward; the other 8 columns start fresh.
+            old_shape = old_done_mask.shape
+            old_baseline_done = old_done_mask[:, 0].copy() if old_shape[0] == n else None
+            del old_done_mask
+            print(
+                f"done_mask.npy shape mismatch ({old_shape} vs expected "
+                f"{(n, len(CONDITION_KEYS))}) -- migrating, carrying forward "
+                "completed baseline predictions"
+            )
+            done_mask = np.lib.format.open_memmap(
+                done_mask_path, mode="w+", dtype=bool, shape=(n, len(CONDITION_KEYS))
+            )
+            done_mask[:] = False
+            if old_baseline_done is not None:
+                done_mask[:, 0] = old_baseline_done
     else:
         done_mask = np.lib.format.open_memmap(
-            done_mask_path, mode="w+", dtype=bool, shape=(n, len(CONDITIONS))
+            done_mask_path, mode="w+", dtype=bool, shape=(n, len(CONDITION_KEYS))
         )
         done_mask[:] = False
 
-    print(f"Setup done: {n} genes x {len(CONDITIONS)} conditions, files in {out_dir}/")
+    print(f"Setup done: {n} genes x {len(CONDITION_KEYS)} conditions, files in {out_dir}/")
     return df
 
 
@@ -373,10 +432,10 @@ def run_gene_chunk(
 ) -> None:
     out_dir = out_dir or OUTPUT_DIR
     arrays = {}
-    for condition in CONDITIONS:
+    for condition_key in CONDITION_KEYS:
         for name in ("ref", "alt"):
-            path = os.path.join(out_dir, f"{condition}_{name}.npy")
-            arrays[(condition, name)] = np.lib.format.open_memmap(path, mode="r+")
+            path = os.path.join(out_dir, f"{condition_key}_{name}.npy")
+            arrays[(condition_key, name)] = np.lib.format.open_memmap(path, mode="r+")
     done_mask = np.lib.format.open_memmap(os.path.join(out_dir, "done_mask.npy"), mode="r+")
 
     with Fasta(REF_FASTA) as fa:
@@ -390,10 +449,10 @@ def run_gene_chunk(
             )
             seq_alt = build_variant_seq(seq_ref, int(row["variant_offset"]), alt_base)
 
-            for ci, condition in enumerate(CONDITIONS):
+            for ci, condition_key in enumerate(CONDITION_KEYS):
                 if done_mask[gi, ci]:
                     continue
-                cond_ref, cond_alt = sequences_for_condition(seq_ref, seq_alt, condition, row)
+                cond_ref, cond_alt = sequences_for_condition(seq_ref, seq_alt, condition_key, row)
 
                 batch = torch.cat([onehot(cond_ref), onehot(cond_alt)], dim=0).to(device)
                 preds = model.predict(
@@ -408,8 +467,8 @@ def run_gene_chunk(
                 out = hepg2.tensor.cpu().numpy().mean(axis=-1)  # (2, 131_072)
                 ref_vals, alt_vals = out
 
-                arrays[(condition, "ref")][gi] = ref_vals.astype(DTYPE)
-                arrays[(condition, "alt")][gi] = alt_vals.astype(DTYPE)
+                arrays[(condition_key, "ref")][gi] = ref_vals.astype(DTYPE)
+                arrays[(condition_key, "alt")][gi] = alt_vals.astype(DTYPE)
                 done_mask[gi, ci] = True
 
     for arr in arrays.values():

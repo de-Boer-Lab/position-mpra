@@ -13,7 +13,13 @@ each point = one gene
 
 Also produces two correlation heatmaps (Pearson R^2 between the no-insertion
 exon2 VE and the exon2 VE at each insertion length, one for downstream, one
-for upstream).
+for upstream) and a 3x3 scatterplot grid, one panel per condition in
+CONDITION_KEYS (baseline + 4 upstream lengths + 4 downstream lengths), x =
+baseline exon2 VE, y = that condition's exon2 VE.
+
+Reads the 9-condition-per-gene layout written by the current
+create_variant_all_promoters.py ({condition_key}_ref.npy/_alt.npy for
+condition_key in baseline/upstream_{25,50,75,100}/downstream_{25,50,75,100}).
 
 Usage
 -----
@@ -36,9 +42,16 @@ DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.png"
 DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
 DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.png"
 DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.png"
+DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.png"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
+
+# Matches CONDITION_KEYS in create_variant_all_promoters.py -- the 9 files
+# ({condition_key}_ref.npy/_alt.npy) actually written to predictions_dir.
+CONDITION_KEYS = ["baseline"] + [
+    f"{position}_{k}" for position in ("upstream", "downstream") for k in LENGTH_CATEGORIES
+]
 
 # Categorical palette (dataviz skill default, slots 1/2/3 -- validated all-pairs CVD-safe)
 COLORS = {
@@ -68,21 +81,40 @@ SEQUENTIAL_BLUE_CMAP = LinearSegmentedColormap.from_list(
 
 
 def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
+    """Reads whichever schema is actually in predictions_dir:
+      - old (one length/gene): promoters_metadata.tsv has "length_category";
+        files are {baseline,upstream,downstream}_{ref,alt}.npy.
+      - new (all 4 lengths x both positions, every gene): metadata has
+        insertion_seq_{25,50,75,100} instead; files are one per CONDITION_KEY
+        (baseline, upstream_{K}, downstream_{K}).
+    Either way, returns the same tidy columns: gene, condition
+    (baseline/upstream/downstream), length (0/25/50/75/100), exon2_ve.
+    """
     meta = pd.read_csv(os.path.join(predictions_dir, "promoters_metadata.tsv"), sep="\t")
     n = len(meta)
+    old_schema = "length_category" in meta.columns
+    condition_keys = CONDITIONS if old_schema else CONDITION_KEYS
 
     rows = []
-    for condition in CONDITIONS:
-        ref = np.load(os.path.join(predictions_dir, f"{condition}_ref.npy"), mmap_mode="r")
-        alt = np.load(os.path.join(predictions_dir, f"{condition}_alt.npy"), mmap_mode="r")
-        assert ref.shape[0] == n, f"{condition}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
+    for condition_key in condition_keys:
+        if condition_key == "baseline":
+            condition, fixed_length = "baseline", 0
+        elif old_schema:
+            condition, fixed_length = condition_key, None  # length varies per gene
+        else:
+            condition, length_str = condition_key.rsplit("_", 1)
+            fixed_length = int(length_str)
 
-        for i, row in tqdm(meta.iterrows(), total=n, desc=condition):
+        ref = np.load(os.path.join(predictions_dir, f"{condition_key}_ref.npy"), mmap_mode="r")
+        alt = np.load(os.path.join(predictions_dir, f"{condition_key}_alt.npy"), mmap_mode="r")
+        assert ref.shape[0] == n, f"{condition_key}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
+
+        for i, row in tqdm(meta.iterrows(), total=n, desc=condition_key):
             s, e = int(row["exon2_start_offset"]), int(row["exon2_end_offset"])
             ve = float(
                 ref[i, s:e].astype(np.float32).mean() - alt[i, s:e].astype(np.float32).mean()
             )
-            length = 0 if condition == "baseline" else int(row["length_category"])
+            length = fixed_length if fixed_length is not None else int(row["length_category"])
             rows.append(
                 {
                     "gene": row["gene"],
@@ -279,6 +311,41 @@ def plot_correlation_heatmap(
     print(f"Saved {out_path}")
 
 
+def plot_scatter_grid(df: pd.DataFrame, out_path: str) -> None:
+    """3x3 grid, one scatterplot per condition in CONDITION_KEYS: x = baseline
+    (no-insertion) exon2 VE, y = that condition's exon2 VE, one point per
+    gene. The baseline-vs-baseline panel is a trivial sanity check."""
+    baseline_ve = df.loc[df["condition"] == "baseline"].set_index("gene")["exon2_ve"]
+
+    panels = [("baseline", 0)] + [
+        (position, k) for position in ("upstream", "downstream") for k in LENGTH_CATEGORIES
+    ]
+
+    fig, axes = plt.subplots(3, 3, figsize=(10, 10), sharex=True, sharey=True)
+    for ax, (position, length) in zip(axes.flat, panels):
+        sub = df[(df["condition"] == position) & (df["length"] == length)]
+        x = baseline_ve.reindex(sub["gene"]).values
+        y = sub["exon2_ve"].values
+        r2 = np.corrcoef(x, y)[0, 1] ** 2
+
+        ax.scatter(x, y, s=6, color=COLORS[position], alpha=0.3, linewidths=0)
+
+        title = "No insertion (self)" if position == "baseline" else f"{LABELS[position]}, {length}bp"
+        ax.set_title(f"{title}\nR$^2$={r2:.2f}", fontsize=9)
+        for spine in ("top", "right"):
+            ax.spines[spine].set_visible(False)
+
+    for ax in axes[-1, :]:
+        ax.set_xlabel("Baseline exon2 VE")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Condition exon2 VE")
+
+    fig.suptitle("Exon2 variant effect: no-insertion baseline vs. each insertion condition", y=1.01)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    print(f"Saved {out_path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Exon2 variant-effect boxplot vs. insertion length/position."
@@ -288,6 +355,7 @@ def main() -> None:
     parser.add_argument("--heatmap_out", default=DEFAULT_HEATMAP_OUT)
     parser.add_argument("--corr_out", default=DEFAULT_CORR_OUT)
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
+    parser.add_argument("--scatter_out", default=DEFAULT_SCATTER_OUT)
     args = parser.parse_args()
 
     ve_path = os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv")
@@ -317,6 +385,7 @@ def main() -> None:
         axis_label="Random sequence added upstream of the variant (bp)",
         condition_label="upstream insertion",
     )
+    plot_scatter_grid(df, args.scatter_out)
 
 
 if __name__ == "__main__":

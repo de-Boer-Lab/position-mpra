@@ -333,13 +333,19 @@ def plot_correlation_heatmap(
     condition_label: str,
     method: str = "pearson",
 ) -> None:
-    """Strictly-lower-triangle heatmap of all-by-all correlation R^2 (Pearson
-    by default, or Spearman -- see _correlation) between exon2 VE at each
-    insertion length for `condition`, plus the no-insertion baseline (length
-    0). The upper triangle and the diagonal (trivial R^2=1 self-correlation)
-    are both masked out."""
+    """Staircase heatmap of all-by-all correlation R^2 (Pearson by default, or
+    Spearman -- see _correlation) between exon2 VE at each insertion length
+    for `condition`, plus the no-insertion baseline (length 0). Rows are the
+    4 smaller-or-equal lengths (drops the largest, which never has anything
+    smaller to pair with); columns are the 4 larger-or-equal lengths (drops
+    the smallest/baseline, which never has anything larger to pair with) --
+    a cell is only ever populated where the column's length exceeds the
+    row's, so this omits the always-empty diagonal row/column a plain n x n
+    lower-triangle grid would otherwise carry."""
     lengths_order = [100, 75, 50, 25, 0]
-    n = len(lengths_order)
+    row_lengths, row_labels = lengths_order[1:], labels[1:]
+    col_lengths, col_labels = lengths_order[:-1], labels[:-1]
+    n_rows, n_cols = len(row_lengths), len(col_lengths)
 
     series = {}
     for length in lengths_order:
@@ -348,35 +354,35 @@ def plot_correlation_heatmap(
             (df["condition"] == cond) & (df["length"] == length)
         ].set_index("gene")["exon2_ve"]
 
-    r2_matrix = np.full((n, n), np.nan)
-    for i, li in enumerate(lengths_order):
-        for j, lj in enumerate(lengths_order):
-            if j >= i:
+    r2_matrix = np.full((n_rows, n_cols), np.nan)
+    for i, row_len in enumerate(row_lengths):
+        for j, col_len in enumerate(col_lengths):
+            if col_len <= row_len:
                 continue
-            genes = series[li].index.intersection(series[lj].index)
-            x = series[li].reindex(genes).values
-            y = series[lj].reindex(genes).values
+            genes = series[row_len].index.intersection(series[col_len].index)
+            x = series[row_len].reindex(genes).values
+            y = series[col_len].reindex(genes).values
             r2_matrix[i, j] = _correlation(x, y, method) ** 2
 
     masked = np.ma.masked_invalid(r2_matrix)
     cmap = SEQUENTIAL_BLUE_CMAP.copy()
     cmap.set_bad(color="none")
 
-    fig, ax = plt.subplots(figsize=(1.2 * n + 1, 1.2 * n + 1))
+    fig, ax = plt.subplots(figsize=(1.2 * n_cols + 1, 1.2 * n_rows + 1))
     im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
 
-    for i in range(n):
-        for j in range(i):
+    for i in range(n_rows):
+        for j in range(n_cols):
             r2 = r2_matrix[i, j]
             if np.isnan(r2):
                 continue
             text_color = "white" if r2 > 0.6 else "#0b0b0b"
             ax.text(j, i, f"{r2:.2f}", ha="center", va="center", fontsize=9, color=text_color)
 
-    ax.set_xticks(range(n))
-    ax.set_xticklabels(labels)
-    ax.set_yticks(range(n))
-    ax.set_yticklabels(labels)
+    ax.set_xticks(range(n_cols))
+    ax.set_xticklabels(col_labels)
+    ax.set_yticks(range(n_rows))
+    ax.set_yticklabels(row_labels)
     ax.set_xlabel(axis_label)
     ax.set_ylabel(axis_label)
     method_label = "Spearman" if method == "spearman" else "Pearson"

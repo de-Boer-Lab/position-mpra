@@ -11,11 +11,16 @@ y = exon2 variant effect
 color = condition (baseline / upstream -200bp / downstream -100bp insertion)
 each point = one gene
 
-Also produces two correlation heatmaps (Pearson R^2 between the no-insertion
-exon2 VE and the exon2 VE at each insertion length, one for downstream, one
-for upstream) and a 3x3 scatterplot grid, one panel per condition in
-CONDITION_KEYS (baseline + 4 upstream lengths + 4 downstream lengths), x =
-baseline exon2 VE, y = that condition's exon2 VE.
+Also produces:
+  - two correlation heatmaps (Pearson R^2 between exon2 VE at each pair of
+    insertion lengths, strictly-lower-triangle, one for downstream, one for
+    upstream)
+  - two scatterplot matrices, same strictly-lower-triangle layout as the
+    heatmaps but each cell is the actual gene-by-gene scatter for that pair
+    of lengths instead of a single R^2 value
+  - a 3x3 scatterplot grid, one panel per condition in CONDITION_KEYS
+    (baseline + 4 upstream lengths + 4 downstream lengths), x = baseline
+    exon2 VE, y = that condition's exon2 VE
 
 Reads the 9-condition-per-gene layout written by the current
 create_variant_all_promoters.py ({condition_key}_ref.npy/_alt.npy for
@@ -44,6 +49,8 @@ DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
 DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.png"
 DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.png"
 DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.png"
+DEFAULT_SCATTER_MATRIX_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix.png"
+DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix_upstream.png"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
@@ -358,6 +365,55 @@ def plot_correlation_heatmap(
     print(f"Saved {out_path}")
 
 
+def plot_scatter_matrix(
+    df: pd.DataFrame,
+    out_path: str,
+    condition: str,
+    labels: list,
+    axis_label: str,
+    condition_label: str,
+) -> None:
+    """All-by-all scatterplot matrix: same strictly-lower-triangle layout as
+    plot_correlation_heatmap (upper triangle + diagonal omitted), but each
+    cell is the actual gene-by-gene scatter for that pair of insertion
+    lengths instead of a single correlation value."""
+    lengths_order = [100, 75, 50, 25, 0]
+    n = len(lengths_order)
+
+    series = {}
+    for length in lengths_order:
+        cond = "baseline" if length == 0 else condition
+        series[length] = df.loc[
+            (df["condition"] == cond) & (df["length"] == length)
+        ].set_index("gene")["exon2_ve"]
+
+    fig, axes = plt.subplots(n, n, figsize=(2.2 * n, 2.2 * n))
+    for i, li in enumerate(lengths_order):
+        for j, lj in enumerate(lengths_order):
+            ax = axes[i, j]
+            if j >= i:
+                ax.axis("off")
+                continue
+            genes = series[li].index.intersection(series[lj].index)
+            x = series[lj].reindex(genes).values
+            y = series[li].reindex(genes).values
+            ax.scatter(x, y, s=4, color=COLORS[condition], alpha=0.25, linewidths=0)
+            for spine in ("top", "right"):
+                ax.spines[spine].set_visible(False)
+            ax.tick_params(labelsize=7)
+            if i == n - 1:
+                ax.set_xlabel(labels[j], fontsize=9)
+            if j == 0:
+                ax.set_ylabel(labels[i], fontsize=9)
+
+    fig.suptitle(
+        f"All-by-all exon2 variant effect ({condition_label})\n{axis_label}", y=1.01
+    )
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    print(f"Saved {out_path}")
+
+
 def plot_scatter_grid(df: pd.DataFrame, out_path: str) -> None:
     """3x3 grid, one scatterplot per condition in CONDITION_KEYS: x = baseline
     (no-insertion) exon2 VE, y = that condition's exon2 VE, one point per
@@ -403,6 +459,8 @@ def main() -> None:
     parser.add_argument("--corr_out", default=DEFAULT_CORR_OUT)
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
     parser.add_argument("--scatter_out", default=DEFAULT_SCATTER_OUT)
+    parser.add_argument("--scatter_matrix_out", default=DEFAULT_SCATTER_MATRIX_OUT)
+    parser.add_argument("--scatter_matrix_upstream_out", default=DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT)
     parser.add_argument(
         "--workers",
         type=int,
@@ -434,6 +492,22 @@ def main() -> None:
     plot_correlation_heatmap(
         df,
         args.corr_upstream_out,
+        condition="upstream",
+        labels=[str(length) for length in lengths_order],
+        axis_label="Random sequence added upstream of the variant (bp)",
+        condition_label="upstream insertion",
+    )
+    plot_scatter_matrix(
+        df,
+        args.scatter_matrix_out,
+        condition="downstream",
+        labels=[str(-(150 + length)) for length in lengths_order],
+        axis_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
+        condition_label="downstream insertion",
+    )
+    plot_scatter_matrix(
+        df,
+        args.scatter_matrix_upstream_out,
         condition="upstream",
         labels=[str(length) for length in lengths_order],
         axis_label="Random sequence added upstream of the variant (bp)",

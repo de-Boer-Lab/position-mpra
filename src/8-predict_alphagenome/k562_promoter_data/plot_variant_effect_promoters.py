@@ -308,10 +308,10 @@ def plot_correlation_heatmap(
     axis_label: str,
     condition_label: str,
 ) -> None:
-    """Lower-triangle heatmap of all-by-all Pearson R^2 between exon2 VE at
-    each insertion length for `condition`, plus the no-insertion baseline
-    (length 0). The upper triangle is masked out since the matrix is
-    symmetric."""
+    """Strictly-lower-triangle heatmap of all-by-all Pearson R^2 between exon2
+    VE at each insertion length for `condition`, plus the no-insertion
+    baseline (length 0). The upper triangle and the diagonal (trivial R^2=1
+    self-correlation) are both masked out."""
     lengths_order = [100, 75, 50, 25, 0]
     n = len(lengths_order)
 
@@ -325,7 +325,7 @@ def plot_correlation_heatmap(
     r2_matrix = np.full((n, n), np.nan)
     for i, li in enumerate(lengths_order):
         for j, lj in enumerate(lengths_order):
-            if j > i:
+            if j >= i:
                 continue
             genes = series[li].index.intersection(series[lj].index)
             x = series[li].reindex(genes).values
@@ -412,16 +412,13 @@ def main() -> None:
     args = parser.parse_args()
 
     ve_path = os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv")
-    # if os.path.exists(ve_path):
-    #     print(f"Found existing {ve_path}, skipping VE computation")
-    #     df = pd.read_csv(ve_path, sep="\t")
-    # else:
-    #     df = compute_exon2_ve(args.predictions_dir)
-    #     df.to_csv(ve_path, sep="\t", index=False)
+    if os.path.exists(ve_path):
+        print(f"Found existing {ve_path}, skipping VE computation")
+        df = pd.read_csv(ve_path, sep="\t")
+    else:
+        df = compute_exon2_ve(args.predictions_dir, workers=args.workers)
+        df.to_csv(ve_path, sep="\t", index=False)
 
-    df = compute_exon2_ve(args.predictions_dir, workers=args.workers)
-    df.to_csv(ve_path, sep="\t", index=False)
-    
     plot(df, args.out)
     plot_heatmap(df, args.heatmap_out)
 

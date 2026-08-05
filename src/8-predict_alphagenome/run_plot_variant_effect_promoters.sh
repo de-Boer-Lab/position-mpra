@@ -3,7 +3,7 @@
 #SBATCH --account=st-cdeboer-1
 #SBATCH --output=/scratch/st-cdeboer-1/sambina/outputs/%A:%x.txt
 #SBATCH --error=/scratch/st-cdeboer-1/sambina/errors/%A:%x.err
-#SBATCH --time=00:30:00
+#SBATCH --time=2:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=16G

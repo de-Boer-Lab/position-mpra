@@ -13,7 +13,13 @@ each point = one gene
 
 Also produces two correlation heatmaps (Pearson R^2 between the no-insertion
 exon2 VE and the exon2 VE at each insertion length, one for downstream, one
-for upstream).
+for upstream) and a 3x3 scatterplot grid, one panel per condition in
+CONDITION_KEYS (baseline + 4 upstream lengths + 4 downstream lengths), x =
+baseline exon2 VE, y = that condition's exon2 VE.
+
+Reads the 9-condition-per-gene layout written by the current
+create_variant_all_promoters.py ({condition_key}_ref.npy/_alt.npy for
+condition_key in baseline/upstream_{25,50,75,100}/downstream_{25,50,75,100}).
 
 Usage
 -----
@@ -28,6 +34,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
+from tqdm import tqdm
 
 PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/all_k562_promoters"
 DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
@@ -35,9 +42,16 @@ DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.png"
 DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
 DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.png"
 DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.png"
+DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.png"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
+
+# Matches CONDITION_KEYS in create_variant_all_promoters.py -- the 9 files
+# ({condition_key}_ref.npy/_alt.npy) actually written to predictions_dir.
+CONDITION_KEYS = ["baseline"] + [
+    f"{position}_{k}" for position in ("upstream", "downstream") for k in LENGTH_CATEGORIES
+]
 
 # Categorical palette (dataviz skill default, slots 1/2/3 -- validated all-pairs CVD-safe)
 COLORS = {
@@ -67,21 +81,40 @@ SEQUENTIAL_BLUE_CMAP = LinearSegmentedColormap.from_list(
 
 
 def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
+    """Reads whichever schema is actually in predictions_dir:
+      - old (one length/gene): promoters_metadata.tsv has "length_category";
+        files are {baseline,upstream,downstream}_{ref,alt}.npy.
+      - new (all 4 lengths x both positions, every gene): metadata has
+        insertion_seq_{25,50,75,100} instead; files are one per CONDITION_KEY
+        (baseline, upstream_{K}, downstream_{K}).
+    Either way, returns the same tidy columns: gene, condition
+    (baseline/upstream/downstream), length (0/25/50/75/100), exon2_ve.
+    """
     meta = pd.read_csv(os.path.join(predictions_dir, "promoters_metadata.tsv"), sep="\t")
     n = len(meta)
+    old_schema = "length_category" in meta.columns
+    condition_keys = CONDITIONS if old_schema else CONDITION_KEYS
 
     rows = []
-    for condition in CONDITIONS:
-        ref = np.load(os.path.join(predictions_dir, f"{condition}_ref.npy"), mmap_mode="r")
-        alt = np.load(os.path.join(predictions_dir, f"{condition}_alt.npy"), mmap_mode="r")
-        assert ref.shape[0] == n, f"{condition}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
+    for condition_key in condition_keys:
+        if condition_key == "baseline":
+            condition, fixed_length = "baseline", 0
+        elif old_schema:
+            condition, fixed_length = condition_key, None  # length varies per gene
+        else:
+            condition, length_str = condition_key.rsplit("_", 1)
+            fixed_length = int(length_str)
 
-        for i, row in meta.iterrows():
+        ref = np.load(os.path.join(predictions_dir, f"{condition_key}_ref.npy"), mmap_mode="r")
+        alt = np.load(os.path.join(predictions_dir, f"{condition_key}_alt.npy"), mmap_mode="r")
+        assert ref.shape[0] == n, f"{condition_key}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
+
+        for i, row in tqdm(meta.iterrows(), total=n, desc=condition_key):
             s, e = int(row["exon2_start_offset"]), int(row["exon2_end_offset"])
             ve = float(
                 ref[i, s:e].astype(np.float32).mean() - alt[i, s:e].astype(np.float32).mean()
             )
-            length = 0 if condition == "baseline" else int(row["length_category"])
+            length = fixed_length if fixed_length is not None else int(row["length_category"])
             rows.append(
                 {
                     "gene": row["gene"],
@@ -224,47 +257,48 @@ def plot_correlation_heatmap(
     df: pd.DataFrame,
     out_path: str,
     condition: str,
-    col_labels: list,
-    x_label: str,
-    row_label: str,
+    labels: list,
+    axis_label: str,
     condition_label: str,
 ) -> None:
-    """1-row heatmap: Pearson R^2 between the no-insertion (baseline) exon2 VE
-    and the exon2 VE for `condition`, one column per insertion length plus a
-    rightmost reference column for no random sequence (length 0, trivially
-    R^2=1 since it is baseline correlated with itself)."""
+    """Lower-triangle heatmap of all-by-all Pearson R^2 between exon2 VE at
+    each insertion length for `condition`, plus the no-insertion baseline
+    (length 0). The upper triangle is masked out since the matrix is
+    symmetric."""
     lengths_order = [100, 75, 50, 25, 0]
-    baseline_ve = df.loc[df["condition"] == "baseline"].set_index("gene")["exon2_ve"]
+    n = len(lengths_order)
 
-    r2_values, n_values = [], []
+    series = {}
     for length in lengths_order:
         cond = "baseline" if length == 0 else condition
-        sub = df[(df["condition"] == cond) & (df["length"] == length)]
-        x = baseline_ve.reindex(sub["gene"]).values
-        y = sub["exon2_ve"].values
-        r = np.corrcoef(x, y)[0, 1]
-        r2_values.append(r**2)
-        n_values.append(len(sub))
+        series[length] = df.loc[
+            (df["condition"] == cond) & (df["length"] == length)
+        ].set_index("gene")["exon2_ve"]
 
-    data = np.array(r2_values).reshape(1, -1)
+    r2_matrix = np.full((n, n), np.nan)
+    for i, li in enumerate(lengths_order):
+        for j, lj in enumerate(lengths_order):
+            if j > i:
+                continue
+            genes = series[li].index.intersection(series[lj].index)
+            x = series[li].reindex(genes).values
+            y = series[lj].reindex(genes).values
+            r2_matrix[i, j] = np.corrcoef(x, y)[0, 1] ** 2
 
-    fig, ax = plt.subplots(figsize=(1.6 * len(lengths_order) + 1, 2.6))
-    im = ax.imshow(data, aspect="auto", cmap=SEQUENTIAL_BLUE_CMAP, vmin=0, vmax=1)
+    masked = np.ma.masked_invalid(r2_matrix)
+    cmap = SEQUENTIAL_BLUE_CMAP.copy()
+    cmap.set_bad(color="none")
 
-    ax.set_xticks(range(len(lengths_order)))
-    ax.set_xticklabels(col_labels)
-    ax.set_xlabel(x_label)
-    ax.set_yticks([0])
-    ax.set_yticklabels([row_label])
-    ax.set_title(
-        f"Correlation with no-insertion exon2 variant effect\n(Pearson R$^2$, {condition_label})"
-    )
+    fig, ax = plt.subplots(figsize=(1.2 * n + 1, 1.2 * n + 1))
+    im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
 
-    for j, (r2, n) in enumerate(zip(r2_values, n_values)):
-        text_color = "white" if r2 > 0.6 else "#0b0b0b"
-        ax.text(
-            j, 0, f"R$^2$={r2:.2f}\nn={n}", ha="center", va="center", fontsize=9, color=text_color
-        )
+    ax.set_xticks(range(n))
+    ax.set_xticklabels(labels)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(labels)
+    ax.set_xlabel(axis_label)
+    ax.set_ylabel(axis_label)
+    ax.set_title(f"Pairwise correlation of exon2 variant effect\n(Pearson R$^2$, {condition_label})")
 
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -272,6 +306,41 @@ def plot_correlation_heatmap(
     cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.03)
     cbar.set_label("Pearson R$^2$")
 
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    print(f"Saved {out_path}")
+
+
+def plot_scatter_grid(df: pd.DataFrame, out_path: str) -> None:
+    """3x3 grid, one scatterplot per condition in CONDITION_KEYS: x = baseline
+    (no-insertion) exon2 VE, y = that condition's exon2 VE, one point per
+    gene. The baseline-vs-baseline panel is a trivial sanity check."""
+    baseline_ve = df.loc[df["condition"] == "baseline"].set_index("gene")["exon2_ve"]
+
+    panels = [("baseline", 0)] + [
+        (position, k) for position in ("upstream", "downstream") for k in LENGTH_CATEGORIES
+    ]
+
+    fig, axes = plt.subplots(3, 3, figsize=(10, 10), sharex=True, sharey=True)
+    for ax, (position, length) in zip(axes.flat, panels):
+        sub = df[(df["condition"] == position) & (df["length"] == length)]
+        x = baseline_ve.reindex(sub["gene"]).values
+        y = sub["exon2_ve"].values
+        r2 = np.corrcoef(x, y)[0, 1] ** 2
+
+        ax.scatter(x, y, s=6, color=COLORS[position], alpha=0.3, linewidths=0)
+
+        title = "No insertion (self)" if position == "baseline" else f"{LABELS[position]}, {length}bp"
+        ax.set_title(f"{title}\nR$^2$={r2:.2f}", fontsize=9)
+        for spine in ("top", "right"):
+            ax.spines[spine].set_visible(False)
+
+    for ax in axes[-1, :]:
+        ax.set_xlabel("Baseline exon2 VE")
+    for ax in axes[:, 0]:
+        ax.set_ylabel("Condition exon2 VE")
+
+    fig.suptitle("Exon2 variant effect: no-insertion baseline vs. each insertion condition", y=1.01)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     print(f"Saved {out_path}")
@@ -286,12 +355,20 @@ def main() -> None:
     parser.add_argument("--heatmap_out", default=DEFAULT_HEATMAP_OUT)
     parser.add_argument("--corr_out", default=DEFAULT_CORR_OUT)
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
+    parser.add_argument("--scatter_out", default=DEFAULT_SCATTER_OUT)
     args = parser.parse_args()
 
+    ve_path = os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv")
+    # if os.path.exists(ve_path):
+    #     print(f"Found existing {ve_path}, skipping VE computation")
+    #     df = pd.read_csv(ve_path, sep="\t")
+    # else:
+    #     df = compute_exon2_ve(args.predictions_dir)
+    #     df.to_csv(ve_path, sep="\t", index=False)
+    
     df = compute_exon2_ve(args.predictions_dir)
-    df.to_csv(
-        os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv"), sep="\t", index=False
-    )
+    df.to_csv(ve_path, sep="\t", index=False)
+    
     plot(df, args.out)
     plot_heatmap(df, args.heatmap_out)
 
@@ -300,20 +377,19 @@ def main() -> None:
         df,
         args.corr_out,
         condition="downstream",
-        col_labels=[str(-(150 + length)) for length in lengths_order],
-        x_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
-        row_label="Downstream\ninsertion",
+        labels=[str(-(150 + length)) for length in lengths_order],
+        axis_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
         condition_label="downstream insertion",
     )
     plot_correlation_heatmap(
         df,
         args.corr_upstream_out,
         condition="upstream",
-        col_labels=[str(length) for length in lengths_order],
-        x_label="Random sequence added upstream of the variant (bp)",
-        row_label="Upstream\ninsertion",
+        labels=[str(length) for length in lengths_order],
+        axis_label="Random sequence added upstream of the variant (bp)",
         condition_label="upstream insertion",
     )
+    plot_scatter_grid(df, args.scatter_out)
 
 
 if __name__ == "__main__":

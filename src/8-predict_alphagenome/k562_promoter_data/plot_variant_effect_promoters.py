@@ -29,6 +29,7 @@ Usage
 
 import argparse
 import os
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -80,7 +81,35 @@ SEQUENTIAL_BLUE_CMAP = LinearSegmentedColormap.from_list(
 )
 
 
-def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
+def _compute_condition_chunk(
+    predictions_dir: str,
+    condition_key: str,
+    condition: str,
+    fixed_length,
+    gene_ids_chunk,
+    starts_chunk,
+    ends_chunk,
+    lengths_chunk,
+    row_start: int,
+) -> list:
+    """Runs in a worker process: computes VE for meta rows
+    [row_start, row_start + len(gene_ids_chunk)) of one condition_key. Each
+    worker reopens the memmap itself -- read-only mmaps are safely shared
+    across processes, nothing is duplicated in memory up front."""
+    ref = np.load(os.path.join(predictions_dir, f"{condition_key}_ref.npy"), mmap_mode="r")
+    alt = np.load(os.path.join(predictions_dir, f"{condition_key}_alt.npy"), mmap_mode="r")
+
+    out = []
+    for local_idx, gene in enumerate(gene_ids_chunk):
+        i = row_start + local_idx
+        s, e = int(starts_chunk[local_idx]), int(ends_chunk[local_idx])
+        ve = float(ref[i, s:e].astype(np.float32).mean() - alt[i, s:e].astype(np.float32).mean())
+        length = fixed_length if fixed_length is not None else int(lengths_chunk[local_idx])
+        out.append((gene, condition, length, ve))
+    return out
+
+
+def compute_exon2_ve(predictions_dir: str, workers: int = None) -> pd.DataFrame:
     """Reads whichever schema is actually in predictions_dir:
       - old (one length/gene): promoters_metadata.tsv has "length_category";
         files are {baseline,upstream,downstream}_{ref,alt}.npy.
@@ -89,13 +118,28 @@ def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
         (baseline, upstream_{K}, downstream_{K}).
     Either way, returns the same tidy columns: gene, condition
     (baseline/upstream/downstream), length (0/25/50/75/100), exon2_ve.
+
+    Parallelized across processes: each condition is split into chunks of
+    contiguous gene rows, and all (condition, chunk) tasks across all
+    conditions run concurrently in a process pool -- this is what actually
+    buys the speedup, since the per-row cost here is dominated by mmap I/O
+    latency on network storage, and concurrent readers hide that latency
+    instead of paying it one row at a time.
     """
     meta = pd.read_csv(os.path.join(predictions_dir, "promoters_metadata.tsv"), sep="\t")
     n = len(meta)
     old_schema = "length_category" in meta.columns
     condition_keys = CONDITIONS if old_schema else CONDITION_KEYS
 
-    rows = []
+    gene_ids = meta["gene"].to_numpy()
+    starts = meta["exon2_start_offset"].to_numpy()
+    ends = meta["exon2_end_offset"].to_numpy()
+    length_categories = meta["length_category"].to_numpy() if old_schema else None
+
+    workers = workers or len(os.sched_getaffinity(0))
+    chunk_size = max(1, -(-n // workers))  # ~1 chunk per worker per condition
+
+    tasks = []
     for condition_key in condition_keys:
         if condition_key == "baseline":
             condition, fixed_length = "baseline", 0
@@ -105,26 +149,29 @@ def compute_exon2_ve(predictions_dir: str) -> pd.DataFrame:
             condition, length_str = condition_key.rsplit("_", 1)
             fixed_length = int(length_str)
 
-        ref = np.load(os.path.join(predictions_dir, f"{condition_key}_ref.npy"), mmap_mode="r")
-        alt = np.load(os.path.join(predictions_dir, f"{condition_key}_alt.npy"), mmap_mode="r")
-        assert ref.shape[0] == n, f"{condition_key}_ref.npy has {ref.shape[0]} rows, metadata has {n}"
-
-        for i, row in tqdm(meta.iterrows(), total=n, desc=condition_key):
-            s, e = int(row["exon2_start_offset"]), int(row["exon2_end_offset"])
-            ve = float(
-                ref[i, s:e].astype(np.float32).mean() - alt[i, s:e].astype(np.float32).mean()
-            )
-            length = fixed_length if fixed_length is not None else int(row["length_category"])
-            rows.append(
-                {
-                    "gene": row["gene"],
-                    "condition": condition,
-                    "length": length,
-                    "exon2_ve": ve,
-                }
+        for row_start in range(0, n, chunk_size):
+            row_end = min(row_start + chunk_size, n)
+            tasks.append(
+                (
+                    predictions_dir,
+                    condition_key,
+                    condition,
+                    fixed_length,
+                    gene_ids[row_start:row_end],
+                    starts[row_start:row_end],
+                    ends[row_start:row_end],
+                    length_categories[row_start:row_end] if length_categories is not None else None,
+                    row_start,
+                )
             )
 
-    return pd.DataFrame(rows)
+    rows = []
+    with ProcessPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(_compute_condition_chunk, *task) for task in tasks]
+        for future in tqdm(as_completed(futures), total=len(futures), desc="chunks"):
+            rows.extend(future.result())
+
+    return pd.DataFrame(rows, columns=["gene", "condition", "length", "exon2_ve"])
 
 
 def plot(df: pd.DataFrame, out_path: str) -> None:
@@ -356,6 +403,12 @@ def main() -> None:
     parser.add_argument("--corr_out", default=DEFAULT_CORR_OUT)
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
     parser.add_argument("--scatter_out", default=DEFAULT_SCATTER_OUT)
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=None,
+        help="Process pool size for compute_exon2_ve (default: CPUs allocated to this job).",
+    )
     args = parser.parse_args()
 
     ve_path = os.path.join(os.path.dirname(args.out), "exon2_variant_effect.tsv")
@@ -365,8 +418,8 @@ def main() -> None:
     # else:
     #     df = compute_exon2_ve(args.predictions_dir)
     #     df.to_csv(ve_path, sep="\t", index=False)
-    
-    df = compute_exon2_ve(args.predictions_dir)
+
+    df = compute_exon2_ve(args.predictions_dir, workers=args.workers)
     df.to_csv(ve_path, sep="\t", index=False)
     
     plot(df, args.out)

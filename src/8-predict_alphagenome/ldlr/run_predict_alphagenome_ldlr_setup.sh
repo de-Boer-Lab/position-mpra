@@ -20,6 +20,6 @@ conda activate alphagenome_pt
 
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-SCRIPT=/scratch/st-cdeboer-1/sambina/position_mpra/src/8-predict_alphagenome/pytorch/predict_alphagenome_ldlr.py
+SCRIPT=/scratch/st-cdeboer-1/sambina/position_mpra/src/8-predict_alphagenome/ldlr/predict_alphagenome_ldlr.py
 
 python "$SCRIPT" --setup_only

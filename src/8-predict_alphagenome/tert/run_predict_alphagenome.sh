@@ -15,7 +15,7 @@ conda activate alphagenome_pt
 
 export LD_LIBRARY_PATH=$CONDA_PREFIX/lib:$LD_LIBRARY_PATH
 
-SCRIPT=/scratch/st-cdeboer-1/sambina/position_mpra/src/8-predict_alphagenome/pytorch/predict_alphagenome_pt.py
+SCRIPT=/scratch/st-cdeboer-1/sambina/position_mpra/src/8-predict_alphagenome/tert/predict_alphagenome_pt.py
 
 python "$SCRIPT" --chrom chr5 --var_pos 1295113 --ref G --alt A --name C228T
 python "$SCRIPT" --chrom chr5 --var_pos 1295135 --ref G --alt A --name C250T

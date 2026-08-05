@@ -1,6 +1,6 @@
 """
 Boxplot: does the amount of random DNA inserted near a -150 promoter variant
-change its predicted effect on exon2 (HepG2 RNA-seq, AlphaGenome)?
+change its predicted effect on exon2 (K562 RNA-seq, AlphaGenome)?
 
 For every gene: exon2 VE = mean(ref_track - alt_track) over the exon2 span
 (same offset in every condition, since exon2 never shifts -- see
@@ -44,16 +44,20 @@ from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 from tqdm import tqdm
 
 PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/all_k562_promoters"
-DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
-DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.svg"
-DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.svg"
-DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.svg"
-DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.svg"
-DEFAULT_SPEARMAN_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap.svg"
-DEFAULT_SPEARMAN_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap_upstream.svg"
-DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.svg"
-DEFAULT_SCATTER_MATRIX_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix.svg"
-DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix_upstream.svg"
+# predictions_k562, not predictions/ (HepG2) -- see the matching note in
+# create_variant_all_promoters.py. Plot outputs are saved alongside the data
+# they're computed from rather than directly under PROMOTER_DIR, so this
+# K562 run's plots can't collide with / overwrite the older HepG2 plots.
+DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions_k562"
+DEFAULT_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_variant_effect_boxplot.svg"
+DEFAULT_HEATMAP_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_variant_effect_heatmap.svg"
+DEFAULT_CORR_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_correlation_heatmap.svg"
+DEFAULT_CORR_UPSTREAM_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_correlation_heatmap_upstream.svg"
+DEFAULT_SPEARMAN_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_spearman_heatmap.svg"
+DEFAULT_SPEARMAN_UPSTREAM_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_spearman_heatmap_upstream.svg"
+DEFAULT_SCATTER_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_scatter_grid.svg"
+DEFAULT_SCATTER_MATRIX_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_scatter_matrix.svg"
+DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_scatter_matrix_upstream.svg"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
@@ -229,7 +233,7 @@ def plot(df: pd.DataFrame, out_path: str) -> None:
     ax.set_xticks([x_positions[l] for l in [0] + LENGTH_CATEGORIES])
     ax.set_xticklabels(["0\n(no insertion)"] + [str(l) for l in LENGTH_CATEGORIES])
     ax.set_xlabel("Random DNA inserted (bp)")
-    ax.set_ylabel("Exon2 variant effect  (mean(ref - alt) over exon2, HepG2 RNA-seq)")
+    ax.set_ylabel("Exon2 variant effect  (mean(ref - alt) over exon2, K562 RNA-seq)")
     ax.set_title("-150 promoter variant effect on exon2, by insertion position and length")
     ax.axhline(0, color="#898781", linewidth=1, zorder=0)
 

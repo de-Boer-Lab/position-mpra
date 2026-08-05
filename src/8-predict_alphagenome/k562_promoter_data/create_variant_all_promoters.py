@@ -1,5 +1,5 @@
 """
-AlphaGenome predictions (1 bp resolution, HepG2 RNA-seq) for a synthetic -150
+AlphaGenome predictions (1 bp resolution, K562 RNA-seq) for a synthetic -150
 promoter variant, with random-DNA insertions at -200 (upstream) and -100
 (downstream) of the TSS, across all 17,547 K562-open-chromatin canonical-TSS
 genes whose exon2 fits inside the model's downstream window reach.
@@ -52,7 +52,7 @@ Saved to {OUTPUT_DIR}/predictions/:
   {condition_key}_ref.npy, {condition_key}_alt.npy   for condition_key in CONDITION_KEYS
       (baseline, upstream_25, upstream_50, upstream_75, upstream_100,
       downstream_25, downstream_50, downstream_75, downstream_100)
-      memory-mapped (n_genes, 131_072) float16 arrays, HepG2 track, forward strand only.
+      memory-mapped (n_genes, 131_072) float16 arrays, K562 track, forward strand only.
   done_mask.npy   (n_genes, 9) bool memmap -- columns = CONDITION_KEYS, in that order
 
 Migration note: if promoters_metadata.tsv / done_mask.npy already exist from
@@ -94,7 +94,15 @@ PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome
 REF_FASTA = "/scratch/st-cdeboer-1/sambina/reference_genome/hg38.fa"
 CHROM_SIZES = "/scratch/st-cdeboer-1/sambina/reference_genome/hg38.chrom.sizes"
 WEIGHTS = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/pytorch/model_all_folds.safetensors"
-OUTPUT_DIR = f"{PROMOTER_DIR}/predictions"
+OUTPUT_DIR = f"{PROMOTER_DIR}/predictions_k562"
+# Was f"{PROMOTER_DIR}/predictions" (HepG2 track) -- moved to a fresh dir when
+# the biosample switched from HepG2 to K562 (see run_gene_chunk). Reusing the
+# old predictions/ dir would be dangerous: run_gene_chunk() skips any gene
+# already marked True in done_mask, so a rerun against the old directory
+# would silently keep the stale HepG2 values in place instead of
+# recomputing them for K562, since nothing about the schema (only the
+# extracted track) changed. The old HepG2 run is left untouched at
+# predictions/ for comparison.
 
 TSS_BED = f"{PROMOTER_DIR}/k562_tss_in_open_chromatin.canonical_gene.bed"
 EXON_BED = f"{PROMOTER_DIR}/k562_exon1_exon2.canonical_gene.bed"
@@ -463,8 +471,8 @@ def run_gene_chunk(
                     resolutions=(1,),
                 )
                 rna1bp = preds.rna_seq[1]
-                hepg2 = rna1bp.select(biosample_name="K562")
-                out = hepg2.tensor.cpu().numpy().mean(axis=-1)  # (2, 131_072)
+                k562 = rna1bp.select(biosample_name="K562")
+                out = k562.tensor.cpu().numpy().mean(axis=-1)  # (2, 131_072)
                 ref_vals, alt_vals = out
 
                 arrays[(condition_key, "ref")][gi] = ref_vals.astype(DTYPE)

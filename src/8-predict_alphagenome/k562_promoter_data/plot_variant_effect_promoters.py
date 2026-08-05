@@ -365,6 +365,14 @@ def plot_correlation_heatmap(
     fig, ax = plt.subplots(figsize=(1.2 * n + 1, 1.2 * n + 1))
     im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
 
+    for i in range(n):
+        for j in range(i):
+            r2 = r2_matrix[i, j]
+            if np.isnan(r2):
+                continue
+            text_color = "white" if r2 > 0.6 else "#0b0b0b"
+            ax.text(j, i, f"{r2:.2f}", ha="center", va="center", fontsize=9, color=text_color)
+
     ax.set_xticks(range(n))
     ax.set_xticklabels(labels)
     ax.set_yticks(range(n))

@@ -463,7 +463,7 @@ def run_gene_chunk(
                     resolutions=(1,),
                 )
                 rna1bp = preds.rna_seq[1]
-                hepg2 = rna1bp.select(biosample_name="HepG2")
+                hepg2 = rna1bp.select(biosample_name="K562")
                 out = hepg2.tensor.cpu().numpy().mean(axis=-1)  # (2, 131_072)
                 ref_vals, alt_vals = out
 

@@ -12,9 +12,10 @@ color = condition (baseline / upstream -200bp / downstream -100bp insertion)
 each point = one gene
 
 Also produces:
-  - two correlation heatmaps (Pearson R^2 between exon2 VE at each pair of
+  - two Pearson correlation heatmaps (R^2 between exon2 VE at each pair of
     insertion lengths, strictly-lower-triangle, one for downstream, one for
-    upstream)
+    upstream) and two Spearman (rank-based, outlier-robust) counterparts of
+    the same heatmaps
   - two scatterplot matrices, same strictly-lower-triangle layout as the
     heatmaps but each cell is the actual gene-by-gene scatter for that pair
     of lengths instead of a single R^2 value
@@ -48,6 +49,8 @@ DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.png"
 DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
 DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.png"
 DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.png"
+DEFAULT_SPEARMAN_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap.png"
+DEFAULT_SPEARMAN_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap_upstream.png"
 DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.png"
 DEFAULT_SCATTER_MATRIX_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix.png"
 DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix_upstream.png"
@@ -307,6 +310,20 @@ def plot_heatmap(df: pd.DataFrame, out_path: str) -> None:
     print(f"Saved {out_path}")
 
 
+def _correlation(x, y, method: str) -> float:
+    """Pearson (default) or Spearman correlation. Spearman is just Pearson
+    computed on ranks instead of raw values -- rank-transforming first makes
+    it robust to outliers (a single extreme point can only move by one rank
+    position, instead of contributing its full numeric deviation), at the
+    cost of only capturing monotonic (not necessarily linear) relationships.
+    Implemented via pandas .rank() rather than scipy to avoid the extra
+    dependency."""
+    if method == "spearman":
+        x = pd.Series(x).rank().to_numpy()
+        y = pd.Series(y).rank().to_numpy()
+    return np.corrcoef(x, y)[0, 1]
+
+
 def plot_correlation_heatmap(
     df: pd.DataFrame,
     out_path: str,
@@ -314,11 +331,13 @@ def plot_correlation_heatmap(
     labels: list,
     axis_label: str,
     condition_label: str,
+    method: str = "pearson",
 ) -> None:
-    """Strictly-lower-triangle heatmap of all-by-all Pearson R^2 between exon2
-    VE at each insertion length for `condition`, plus the no-insertion
-    baseline (length 0). The upper triangle and the diagonal (trivial R^2=1
-    self-correlation) are both masked out."""
+    """Strictly-lower-triangle heatmap of all-by-all correlation R^2 (Pearson
+    by default, or Spearman -- see _correlation) between exon2 VE at each
+    insertion length for `condition`, plus the no-insertion baseline (length
+    0). The upper triangle and the diagonal (trivial R^2=1 self-correlation)
+    are both masked out."""
     lengths_order = [100, 75, 50, 25, 0]
     n = len(lengths_order)
 
@@ -337,7 +356,7 @@ def plot_correlation_heatmap(
             genes = series[li].index.intersection(series[lj].index)
             x = series[li].reindex(genes).values
             y = series[lj].reindex(genes).values
-            r2_matrix[i, j] = np.corrcoef(x, y)[0, 1] ** 2
+            r2_matrix[i, j] = _correlation(x, y, method) ** 2
 
     masked = np.ma.masked_invalid(r2_matrix)
     cmap = SEQUENTIAL_BLUE_CMAP.copy()
@@ -352,13 +371,16 @@ def plot_correlation_heatmap(
     ax.set_yticklabels(labels)
     ax.set_xlabel(axis_label)
     ax.set_ylabel(axis_label)
-    ax.set_title(f"Pairwise correlation of exon2 variant effect\n(Pearson R$^2$, {condition_label})")
+    method_label = "Spearman" if method == "spearman" else "Pearson"
+    ax.set_title(
+        f"Pairwise correlation of exon2 variant effect\n({method_label} R$^2$, {condition_label})"
+    )
 
     for spine in ax.spines.values():
         spine.set_visible(False)
 
     cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.03)
-    cbar.set_label("Pearson R$^2$")
+    cbar.set_label(f"{method_label} R$^2$")
 
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
@@ -458,6 +480,8 @@ def main() -> None:
     parser.add_argument("--heatmap_out", default=DEFAULT_HEATMAP_OUT)
     parser.add_argument("--corr_out", default=DEFAULT_CORR_OUT)
     parser.add_argument("--corr_upstream_out", default=DEFAULT_CORR_UPSTREAM_OUT)
+    parser.add_argument("--spearman_out", default=DEFAULT_SPEARMAN_OUT)
+    parser.add_argument("--spearman_upstream_out", default=DEFAULT_SPEARMAN_UPSTREAM_OUT)
     parser.add_argument("--scatter_out", default=DEFAULT_SCATTER_OUT)
     parser.add_argument("--scatter_matrix_out", default=DEFAULT_SCATTER_MATRIX_OUT)
     parser.add_argument("--scatter_matrix_upstream_out", default=DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT)
@@ -496,6 +520,24 @@ def main() -> None:
         labels=[str(length) for length in lengths_order],
         axis_label="Random sequence added upstream of the variant (bp)",
         condition_label="upstream insertion",
+    )
+    plot_correlation_heatmap(
+        df,
+        args.spearman_out,
+        condition="downstream",
+        labels=[str(-(150 + length)) for length in lengths_order],
+        axis_label="Variant position relative to TSS (bp)  [= -150 - insertion length]",
+        condition_label="downstream insertion",
+        method="spearman",
+    )
+    plot_correlation_heatmap(
+        df,
+        args.spearman_upstream_out,
+        condition="upstream",
+        labels=[str(length) for length in lengths_order],
+        axis_label="Random sequence added upstream of the variant (bp)",
+        condition_label="upstream insertion",
+        method="spearman",
     )
     plot_scatter_matrix(
         df,

@@ -30,13 +30,15 @@
 #
 # Reads {condition_key}_{ref,alt}.npy (CONDITION_KEYS in
 # create_variant_all_promoters.py) + promoters_metadata.tsv, computes exon2
-# variant effect per gene per condition, and writes:
+# variant effect per gene per condition, and writes (all figures as .svg):
 #   exon2_variant_effect.tsv   -- tidy long-format table (gene, condition, length, exon2_ve)
-#   exon2_variant_effect_boxplot.png
-#   exon2_variant_effect_heatmap.png -- one heatmap per insertion length (25/50/75/100bp),
+#   exon2_variant_effect_boxplot.svg
+#   exon2_variant_effect_heatmap.svg -- one heatmap per insertion length (25/50/75/100bp),
 #     rows = genes, columns = no insertion / random at -100 / random at -200
-#   exon2_ve_correlation_heatmap.png / _upstream.png -- pairwise R^2 heatmaps
-#   exon2_ve_scatter_grid.png -- 3x3 baseline-vs-condition scatterplots
+#   exon2_ve_correlation_heatmap.svg / _upstream.svg -- pairwise Pearson R^2 heatmaps
+#   exon2_ve_spearman_heatmap.svg / _upstream.svg -- pairwise Spearman R^2 heatmaps
+#   exon2_ve_scatter_matrix.svg / _upstream.svg -- all-by-all scatterplot matrices
+#   exon2_ve_scatter_grid.svg -- 3x3 baseline-vs-condition scatterplots
 
 source ~/.bashrc
 conda activate dream_rocky_3

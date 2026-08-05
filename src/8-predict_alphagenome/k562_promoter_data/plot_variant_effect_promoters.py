@@ -30,7 +30,7 @@ condition_key in baseline/upstream_{25,50,75,100}/downstream_{25,50,75,100}).
 Usage
 -----
   python plot_variant_effect_promoters.py
-  python plot_variant_effect_promoters.py --predictions_dir <path> --out <path.png>
+  python plot_variant_effect_promoters.py --predictions_dir <path> --out <path.svg>
 """
 
 import argparse
@@ -45,15 +45,15 @@ from tqdm import tqdm
 
 PROMOTER_DIR = "/scratch/st-cdeboer-1/sambina/position_mpra/outputs/8-aphagenome/all_k562_promoters"
 DEFAULT_PREDICTIONS_DIR = f"{PROMOTER_DIR}/predictions"
-DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.png"
-DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.png"
-DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.png"
-DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.png"
-DEFAULT_SPEARMAN_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap.png"
-DEFAULT_SPEARMAN_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap_upstream.png"
-DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.png"
-DEFAULT_SCATTER_MATRIX_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix.png"
-DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix_upstream.png"
+DEFAULT_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_boxplot.svg"
+DEFAULT_HEATMAP_OUT = f"{PROMOTER_DIR}/exon2_variant_effect_heatmap.svg"
+DEFAULT_CORR_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap.svg"
+DEFAULT_CORR_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_correlation_heatmap_upstream.svg"
+DEFAULT_SPEARMAN_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap.svg"
+DEFAULT_SPEARMAN_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_spearman_heatmap_upstream.svg"
+DEFAULT_SCATTER_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_grid.svg"
+DEFAULT_SCATTER_MATRIX_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix.svg"
+DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{PROMOTER_DIR}/exon2_ve_scatter_matrix_upstream.svg"
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]

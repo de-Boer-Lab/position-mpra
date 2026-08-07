@@ -18,18 +18,6 @@ This repository contains the analysis code and supporting materials for studying
     └── 9-schematic
 ```
 
-## Environment and Setup
-
-This repo does not ship a single consolidated `environment.yml` -- different
-scripts were developed and run under different Conda environments (e.g.
-`dream_rocky_3` for general analysis/plotting, `alphagenome_pt` for the
-AlphaGenome PyTorch prediction scripts under `8-predict_alphagenome`, plus a
-few other model-specific environments). To run a given script, use whichever
-environment it was originally run under -- most scripts and SLURM wrapper
-(`run_*.sh`) files note this via a `conda activate <env_name>` line near the
-top; match that when setting up your own environment.
-
-
 ## Citation
 
 If you use this code, please cite:

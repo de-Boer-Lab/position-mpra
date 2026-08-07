@@ -501,9 +501,9 @@ def plot_position_length_heatmap(df: pd.DataFrame, out_path: str, method: str = 
         ax.axhline(boundary, color="#c3c2b7", linewidth=1, zorder=3)
 
     ax.set_xticks(range(n))
-    ax.set_xticklabels(tick_labels)
+    ax.set_xticklabels(tick_labels, fontsize=20, rotation=45)
     ax.set_yticks(range(n))
-    ax.set_yticklabels(tick_labels)
+    ax.set_yticklabels(tick_labels, fontsize=20, rotation=45)
     # set_ylabel's text is rotated 90 deg, so the FIRST word ends up at the
     # bottom of the axis and the LAST word at the top -- write it
     # Downstream-first so "Upstream" (last) lands at the top, matching the
@@ -521,7 +521,8 @@ def plot_position_length_heatmap(df: pd.DataFrame, out_path: str, method: str = 
         spine.set_visible(False)
 
     cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.03)
-    cbar.set_label(f"{method_label} {value_label}")
+    cbar.set_label(f"{method_label} {value_label}", fontsize=20)
+    cbar.ax.tick_params(labelsize=20)
 
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")

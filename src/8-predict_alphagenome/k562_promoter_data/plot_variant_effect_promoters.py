@@ -58,6 +58,10 @@ DEFAULT_SPEARMAN_UPSTREAM_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_spearman_he
 DEFAULT_SCATTER_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_scatter_grid.svg"
 DEFAULT_SCATTER_MATRIX_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_scatter_matrix.svg"
 DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_scatter_matrix_upstream.svg"
+DEFAULT_POSITION_LENGTH_OUT = f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_position_length_heatmap.svg"
+DEFAULT_POSITION_LENGTH_SPEARMAN_OUT = (
+    f"{DEFAULT_PREDICTIONS_DIR}/exon2_ve_position_length_heatmap_spearman.svg"
+)
 
 CONDITIONS = ["baseline", "upstream", "downstream"]
 LENGTH_CATEGORIES = [25, 50, 75, 100]
@@ -337,15 +341,21 @@ def plot_correlation_heatmap(
     condition_label: str,
     method: str = "pearson",
 ) -> None:
-    """Staircase heatmap of all-by-all correlation R^2 (Pearson by default, or
-    Spearman -- see _correlation) between exon2 VE at each insertion length
-    for `condition`, plus the no-insertion baseline (length 0). Rows are the
-    4 smaller-or-equal lengths (drops the largest, which never has anything
-    smaller to pair with); columns are the 4 larger-or-equal lengths (drops
-    the smallest/baseline, which never has anything larger to pair with) --
-    a cell is only ever populated where the column's length exceeds the
-    row's, so this omits the always-empty diagonal row/column a plain n x n
-    lower-triangle grid would otherwise carry."""
+    """Staircase heatmap of all-by-all correlation between exon2 VE at each
+    insertion length for `condition`, plus the no-insertion baseline (length
+    0). Rows are the 4 smaller-or-equal lengths (drops the largest, which
+    never has anything smaller to pair with); columns are the 4
+    larger-or-equal lengths (drops the smallest/baseline, which never has
+    anything larger to pair with) -- a cell is only ever populated where the
+    column's length exceeds the row's, so this omits the always-empty
+    diagonal row/column a plain n x n lower-triangle grid would otherwise
+    carry.
+
+    Pearson (default) is shown as R^2 -- always >= 0, sequential blue scale.
+    Spearman is shown as the signed rho itself, NOT squared -- squaring would
+    erase the sign, and sign is exactly what a rank correlation is good for
+    telling you (positive vs. inverse monotonic relationship). Diverging
+    scale: negative rho renders red, positive blue, ~0 near-white."""
     lengths_order = [100, 75, 50, 25, 0]
     row_lengths, row_labels = lengths_order[1:], labels[1:]
     col_lengths, col_labels = lengths_order[:-1], labels[:-1]
@@ -358,7 +368,7 @@ def plot_correlation_heatmap(
             (df["condition"] == cond) & (df["length"] == length)
         ].set_index("gene")["exon2_ve"]
 
-    r2_matrix = np.full((n_rows, n_cols), np.nan)
+    value_matrix = np.full((n_rows, n_cols), np.nan)
     for i, row_len in enumerate(row_lengths):
         for j, col_len in enumerate(col_lengths):
             if col_len <= row_len:
@@ -366,22 +376,29 @@ def plot_correlation_heatmap(
             genes = series[row_len].index.intersection(series[col_len].index)
             x = series[row_len].reindex(genes).values
             y = series[col_len].reindex(genes).values
-            r2_matrix[i, j] = _correlation(x, y, method) ** 2
+            r = _correlation(x, y, method)
+            value_matrix[i, j] = r if method == "spearman" else r**2
 
-    masked = np.ma.masked_invalid(r2_matrix)
-    cmap = SEQUENTIAL_BLUE_CMAP.copy()
-    cmap.set_bad(color="none")
+    masked = np.ma.masked_invalid(value_matrix)
 
     fig, ax = plt.subplots(figsize=(1.2 * n_cols + 1, 1.2 * n_rows + 1))
-    im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
+    if method == "spearman":
+        cmap = DIVERGING_CMAP.reversed()  # low(negative)=red, high(positive)=blue
+        cmap.set_bad(color="none")
+        norm = TwoSlopeNorm(vmin=-1, vcenter=0.0, vmax=1)
+        im = ax.imshow(masked, cmap=cmap, norm=norm)
+    else:
+        cmap = SEQUENTIAL_BLUE_CMAP.copy()
+        cmap.set_bad(color="none")
+        im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
 
     for i in range(n_rows):
         for j in range(n_cols):
-            r2 = r2_matrix[i, j]
-            if np.isnan(r2):
+            val = value_matrix[i, j]
+            if np.isnan(val):
                 continue
-            text_color = "white" if r2 > 0.6 else "#0b0b0b"
-            ax.text(j, i, f"{r2:.2f}", ha="center", va="center", fontsize=9, color=text_color)
+            text_color = "white" if abs(val) > 0.6 else "#0b0b0b"
+            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=9, color=text_color)
 
     ax.set_xticks(range(n_cols))
     ax.set_xticklabels(col_labels)
@@ -390,15 +407,105 @@ def plot_correlation_heatmap(
     ax.set_xlabel(axis_label)
     ax.set_ylabel(axis_label)
     method_label = "Spearman" if method == "spearman" else "Pearson"
+    value_label = r"$\rho$" if method == "spearman" else "R$^2$"
     ax.set_title(
-        f"Pairwise correlation of exon2 variant effect\n({method_label} R$^2$, {condition_label})"
+        f"Pairwise correlation of exon2 variant effect\n({method_label} {value_label}, {condition_label})"
     )
 
     for spine in ax.spines.values():
         spine.set_visible(False)
 
     cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.03)
-    cbar.set_label(f"{method_label} R$^2$")
+    cbar.set_label(f"{method_label} {value_label}")
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150, bbox_inches="tight")
+    print(f"Saved {out_path}")
+
+
+def plot_position_length_heatmap(df: pd.DataFrame, out_path: str, method: str = "pearson") -> None:
+    """9x9 all-by-all correlation heatmap across all 9 conditions (baseline +
+    4 upstream lengths + 4 downstream lengths). x-axis, left to right:
+    upstream 100->25, baseline 0, downstream 25->100. y-axis, top to bottom:
+    downstream 100->25, baseline 0, upstream 25->100 -- the mirror of the
+    x-axis order. Because of that mirroring, a condition's self-correlation
+    (trivially 1, masked out here same as elsewhere) falls on the
+    ANTI-diagonal rather than the main diagonal: cells near the anti-diagonal
+    are the most similar (nearby length and/or matching length at opposite
+    position) pairs, cells in the far corners are the most different
+    (e.g. top-left = downstream_100 vs upstream_100, opposite positions at
+    the largest length each). This is the one plot that shows the length
+    effect and the position effect together instead of one at a time."""
+    x_seq = [("upstream", 100), ("upstream", 75), ("upstream", 50), ("upstream", 25)]
+    x_seq += [("baseline", 0)]
+    x_seq += [("downstream", 25), ("downstream", 50), ("downstream", 75), ("downstream", 100)]
+    y_seq = list(reversed(x_seq))
+    n = len(x_seq)
+    tick_labels = [str(length) for _, length in x_seq]
+
+    series = {}
+    for key in x_seq:
+        position, length = key
+        series[key] = df.loc[
+            (df["condition"] == position) & (df["length"] == length)
+        ].set_index("gene")["exon2_ve"]
+
+    value_matrix = np.full((n, n), np.nan)
+    for i, y_key in enumerate(y_seq):
+        for j, x_key in enumerate(x_seq):
+            if y_key == x_key:
+                continue
+            genes = series[y_key].index.intersection(series[x_key].index)
+            x = series[y_key].reindex(genes).values
+            y = series[x_key].reindex(genes).values
+            r = _correlation(x, y, method)
+            value_matrix[i, j] = r if method == "spearman" else r**2
+
+    masked = np.ma.masked_invalid(value_matrix)
+
+    fig, ax = plt.subplots(figsize=(1.1 * n + 1, 1.1 * n + 1))
+    if method == "spearman":
+        cmap = DIVERGING_CMAP.reversed()
+        cmap.set_bad(color="none")
+        norm = TwoSlopeNorm(vmin=-1, vcenter=0.0, vmax=1)
+        im = ax.imshow(masked, cmap=cmap, norm=norm)
+    else:
+        cmap = SEQUENTIAL_BLUE_CMAP.copy()
+        cmap.set_bad(color="none")
+        im = ax.imshow(masked, cmap=cmap, vmin=0, vmax=1)
+
+    for i in range(n):
+        for j in range(n):
+            val = value_matrix[i, j]
+            if np.isnan(val):
+                continue
+            text_color = "white" if abs(val) > 0.6 else "#0b0b0b"
+            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=7, color=text_color)
+
+    # Divider lines bounding the baseline row/column, to visually separate
+    # the upstream block / baseline / downstream block.
+    for boundary in (3.5, 4.5):
+        ax.axvline(boundary, color="#c3c2b7", linewidth=1, zorder=3)
+        ax.axhline(boundary, color="#c3c2b7", linewidth=1, zorder=3)
+
+    ax.set_xticks(range(n))
+    ax.set_xticklabels(tick_labels)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(tick_labels)
+    ax.set_xlabel("←  Upstream random bases inserted (bp)      Downstream random bases inserted (bp)  →")
+    ax.set_ylabel("←  Upstream random bases inserted (bp)      Downstream random bases inserted (bp)  →")
+
+    method_label = "Spearman" if method == "spearman" else "Pearson"
+    value_label = r"$\rho$" if method == "spearman" else "R$^2$"
+    ax.set_title(
+        f"Exon2 variant effect correlation across position and length\n({method_label} {value_label})"
+    )
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.03)
+    cbar.set_label(f"{method_label} {value_label}")
 
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
@@ -503,6 +610,10 @@ def main() -> None:
     parser.add_argument("--scatter_out", default=DEFAULT_SCATTER_OUT)
     parser.add_argument("--scatter_matrix_out", default=DEFAULT_SCATTER_MATRIX_OUT)
     parser.add_argument("--scatter_matrix_upstream_out", default=DEFAULT_SCATTER_MATRIX_UPSTREAM_OUT)
+    parser.add_argument("--position_length_out", default=DEFAULT_POSITION_LENGTH_OUT)
+    parser.add_argument(
+        "--position_length_spearman_out", default=DEFAULT_POSITION_LENGTH_SPEARMAN_OUT
+    )
     parser.add_argument(
         "--workers",
         type=int,
@@ -574,6 +685,8 @@ def main() -> None:
         condition_label="upstream insertion",
     )
     plot_scatter_grid(df, args.scatter_out)
+    plot_position_length_heatmap(df, args.position_length_out)
+    plot_position_length_heatmap(df, args.position_length_spearman_out, method="spearman")
 
 
 if __name__ == "__main__":

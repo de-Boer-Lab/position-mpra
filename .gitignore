@@ -9,3 +9,6 @@ figures/
 **/__pycache__/
 *.pyc
 *.vscode
+**/.ipynb_checkpoints/
+.DS_Store
+**/.DS_Store

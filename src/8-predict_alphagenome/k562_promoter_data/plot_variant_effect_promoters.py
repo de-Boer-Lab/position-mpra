@@ -98,6 +98,14 @@ SEQUENTIAL_BLUE_CMAP = LinearSegmentedColormap.from_list(
     "sequential_blue", ["#ffffff", "#3361A5"], N=256
 )
 
+# Diverging pair for Spearman rho: red (negative) <-> blue (positive). Uses
+# SEQUENTIAL_BLUE_CMAP's exact blue ("#3361A5") on the positive side, not
+# DIVERGING_CMAP's blue ("#2a78d6"), so a positive rho and a Pearson R^2 read
+# on the same shade of blue when the two heatmaps sit side by side.
+SPEARMAN_CMAP = LinearSegmentedColormap.from_list(
+    "red_gray_blue_matched", ["#e34948", "#f0efec", "#3361A5"], N=256
+)
+
 
 def _compute_condition_chunk(
     predictions_dir: str,
@@ -383,7 +391,7 @@ def plot_correlation_heatmap(
 
     fig, ax = plt.subplots(figsize=(1.2 * n_cols + 1, 1.2 * n_rows + 1))
     if method == "spearman":
-        cmap = DIVERGING_CMAP.reversed()  # low(negative)=red, high(positive)=blue
+        cmap = SPEARMAN_CMAP.copy()
         cmap.set_bad(color="none")
         norm = TwoSlopeNorm(vmin=-1, vcenter=0.0, vmax=1)
         im = ax.imshow(masked, cmap=cmap, norm=norm)
@@ -424,48 +432,43 @@ def plot_correlation_heatmap(
 
 
 def plot_position_length_heatmap(df: pd.DataFrame, out_path: str, method: str = "pearson") -> None:
-    """9x9 all-by-all correlation heatmap across all 9 conditions (baseline +
-    4 upstream lengths + 4 downstream lengths). x-axis, left to right:
-    upstream 100->25, baseline 0, downstream 25->100. y-axis, top to bottom:
-    downstream 100->25, baseline 0, upstream 25->100 -- the mirror of the
-    x-axis order. Because of that mirroring, a condition's self-correlation
-    (trivially 1, masked out here same as elsewhere) falls on the
-    ANTI-diagonal rather than the main diagonal: cells near the anti-diagonal
-    are the most similar (nearby length and/or matching length at opposite
-    position) pairs, cells in the far corners are the most different
-    (e.g. top-left = downstream_100 vs upstream_100, opposite positions at
-    the largest length each). This is the one plot that shows the length
-    effect and the position effect together instead of one at a time."""
-    x_seq = [("upstream", 100), ("upstream", 75), ("upstream", 50), ("upstream", 25)]
-    x_seq += [("baseline", 0)]
-    x_seq += [("downstream", 25), ("downstream", 50), ("downstream", 75), ("downstream", 100)]
-    y_seq = list(reversed(x_seq))
-    n = len(x_seq)
-    tick_labels = [str(length) for _, length in x_seq]
+    """Lower-triangle 9x9 all-by-all correlation heatmap across all 9
+    conditions (baseline + 4 upstream lengths + 4 downstream lengths). Both
+    axes share the same order, top-to-bottom / left-to-right: upstream
+    100->25, baseline 0, downstream 25->100 -- upstream at the top/left,
+    downstream at the bottom/right. Self-correlation (trivially 1) falls on
+    the main diagonal and is masked out, same as the rest of the upper
+    triangle: since corr(A,B) == corr(B,A), the upper triangle is exactly
+    redundant with the lower one, so only the lower triangle is shown."""
+    seq = [("upstream", 100), ("upstream", 75), ("upstream", 50), ("upstream", 25)]
+    seq += [("baseline", 0)]
+    seq += [("downstream", 25), ("downstream", 50), ("downstream", 75), ("downstream", 100)]
+    n = len(seq)
+    tick_labels = [str(length) for _, length in seq]
 
     series = {}
-    for key in x_seq:
+    for key in seq:
         position, length = key
         series[key] = df.loc[
             (df["condition"] == position) & (df["length"] == length)
         ].set_index("gene")["exon2_ve"]
 
     value_matrix = np.full((n, n), np.nan)
-    for i, y_key in enumerate(y_seq):
-        for j, x_key in enumerate(x_seq):
-            if y_key == x_key:
+    for i, row_key in enumerate(seq):
+        for j, col_key in enumerate(seq):
+            if j >= i:
                 continue
-            genes = series[y_key].index.intersection(series[x_key].index)
-            x = series[y_key].reindex(genes).values
-            y = series[x_key].reindex(genes).values
+            genes = series[row_key].index.intersection(series[col_key].index)
+            x = series[row_key].reindex(genes).values
+            y = series[col_key].reindex(genes).values
             r = _correlation(x, y, method)
             value_matrix[i, j] = r if method == "spearman" else r**2
 
     masked = np.ma.masked_invalid(value_matrix)
 
-    fig, ax = plt.subplots(figsize=(1.1 * n + 1, 1.1 * n + 1))
+    fig, ax = plt.subplots(figsize=(1.4 * n + 2, 1.4 * n + 2))
     if method == "spearman":
-        cmap = DIVERGING_CMAP.reversed()
+        cmap = SPEARMAN_CMAP.copy()
         cmap.set_bad(color="none")
         norm = TwoSlopeNorm(vmin=-1, vcenter=0.0, vmax=1)
         im = ax.imshow(masked, cmap=cmap, norm=norm)
@@ -480,7 +483,16 @@ def plot_position_length_heatmap(df: pd.DataFrame, out_path: str, method: str = 
             if np.isnan(val):
                 continue
             text_color = "white" if abs(val) > 0.6 else "#0b0b0b"
-            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=7, color=text_color)
+            ax.text(
+                j,
+                i,
+                f"{val:.2f}",
+                ha="center",
+                va="center",
+                fontsize=20,
+                fontweight="bold",
+                color=text_color,
+            )
 
     # Divider lines bounding the baseline row/column, to visually separate
     # the upstream block / baseline / downstream block.
@@ -492,8 +504,12 @@ def plot_position_length_heatmap(df: pd.DataFrame, out_path: str, method: str = 
     ax.set_xticklabels(tick_labels)
     ax.set_yticks(range(n))
     ax.set_yticklabels(tick_labels)
-    ax.set_xlabel("←  Upstream random bases inserted (bp)      Downstream random bases inserted (bp)  →")
-    ax.set_ylabel("←  Upstream random bases inserted (bp)      Downstream random bases inserted (bp)  →")
+    # set_ylabel's text is rotated 90 deg, so the FIRST word ends up at the
+    # bottom of the axis and the LAST word at the top -- write it
+    # Downstream-first so "Upstream" (last) lands at the top, matching the
+    # grid (upstream rows are on top, not the naive same-string-as-x guess).
+    ax.set_xlabel("←  Upstream (bp)          Downstream (bp)  →", fontsize=20)
+    ax.set_ylabel("Downstream (bp)          Upstream (bp)", fontsize=20)
 
     method_label = "Spearman" if method == "spearman" else "Pearson"
     value_label = r"$\rho$" if method == "spearman" else "R$^2$"

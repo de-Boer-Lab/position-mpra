@@ -433,107 +433,86 @@ def plot_correlation_heatmap(
     print(f"Saved {out_path}")
 
 
-def _staircase_matrix(df: pd.DataFrame, condition: str, method: str, row_lengths: list, col_lengths: list) -> np.ndarray:
-    """Same all-pairs staircase correlation as plot_correlation_heatmap, but
-    row/col length order is caller-supplied instead of fixed, so the same
-    computation can be reused with a reversed row order (see
-    plot_correlation_heatmap_mirror)."""
-    lengths_needed = set(row_lengths) | set(col_lengths)
-    series = {}
-    for length in lengths_needed:
-        cond = "baseline" if length == 0 else condition
-        series[length] = df.loc[
-            (df["condition"] == cond) & (df["length"] == length)
-        ].set_index("gene")["exon2_ve"]
+def plot_correlation_heatmap_mirror(df: pd.DataFrame, out_path: str, method: str = "pearson") -> None:
+    """Downstream and upstream staircase correlations (same data as
+    plot_correlation_heatmap), interlocked into a single n x n grid instead
+    of two separate rectangular panels: both axes share the same length
+    order (0/25/50/75/100), the upper triangle (row < col, toward the
+    top-right) holds downstream all-pairs correlation, the lower triangle
+    (row > col, toward the bottom-left) holds upstream, and the diagonal
+    (self-correlation, trivially 1) is left blank. Because the two
+    conditions occupy complementary halves of one square instead of each
+    sitting in its own masked rectangle, there's no empty corner padding."""
+    lengths = [0, 25, 50, 75, 100]
+    n = len(lengths)
 
-    value_matrix = np.full((len(row_lengths), len(col_lengths)), np.nan)
-    for i, row_len in enumerate(row_lengths):
-        for j, col_len in enumerate(col_lengths):
-            if col_len <= row_len:
+    def series_for(condition: str, length: int) -> pd.Series:
+        cond = "baseline" if length == 0 else condition
+        return df.loc[(df["condition"] == cond) & (df["length"] == length)].set_index("gene")["exon2_ve"]
+
+    downstream_series = {length: series_for("downstream", length) for length in lengths}
+    upstream_series = {length: series_for("upstream", length) for length in lengths}
+
+    value_matrix = np.full((n, n), np.nan)
+    for i in range(n):
+        for j in range(n):
+            if i == j:
                 continue
-            genes = series[row_len].index.intersection(series[col_len].index)
-            x = series[row_len].reindex(genes).values
-            y = series[col_len].reindex(genes).values
+            series = downstream_series if i < j else upstream_series
+            a, b = series[lengths[i]], series[lengths[j]]
+            genes = a.index.intersection(b.index)
+            x = a.reindex(genes).values
+            y = b.reindex(genes).values
             r = _correlation(x, y, method)
             value_matrix[i, j] = r if method == "spearman" else r**2
-    return value_matrix
 
-
-def plot_correlation_heatmap_mirror(df: pd.DataFrame, out_path: str, method: str = "pearson") -> None:
-    """Downstream and upstream staircase correlation heatmaps (same data as
-    plot_correlation_heatmap), stacked into one figure as a vertical mirror:
-    downstream on top, upstream on bottom. Both panels keep the baseline
-    (length 0) as their outermost row, but the upstream panel's row order is
-    reversed relative to plot_correlation_heatmap's, so that baseline sits at
-    the TOP of the bottom panel while it already sits at the BOTTOM of the
-    top panel -- the two baseline rows meet at the seam between panels, and
-    each panel's triangular staircase shape is the vertical reflection of the
-    other's."""
-    lengths_order = [100, 75, 50, 25, 0]
-    col_lengths = lengths_order[:-1]  # 100, 75, 50, 25 -- shared by both panels
-
-    row_lengths_top = lengths_order[1:]  # 75, 50, 25, 0 (baseline at bottom, i.e. at the seam)
-    row_lengths_bottom = list(reversed(row_lengths_top))  # 0, 25, 50, 75 (baseline at top, i.e. at the seam)
-
-    downstream_label = {length: str(-(150 + length)) for length in lengths_order}
-    upstream_label = {length: str(length) for length in lengths_order}
-
-    top_matrix = _staircase_matrix(df, "downstream", method, row_lengths_top, col_lengths)
-    bottom_matrix = _staircase_matrix(df, "upstream", method, row_lengths_bottom, col_lengths)
-
-    top_masked = np.ma.masked_invalid(top_matrix)
-    bottom_masked = np.ma.masked_invalid(bottom_matrix)
+    masked = np.ma.masked_invalid(value_matrix)
 
     if method == "spearman":
         cmap = SPEARMAN_CMAP.copy()
         norm = TwoSlopeNorm(vmin=-1, vcenter=0.0, vmax=1)
-        imshow_kwargs = dict(cmap=cmap, norm=norm, aspect="auto")
+        imshow_kwargs = dict(cmap=cmap, norm=norm)
     else:
         cmap = SEQUENTIAL_BLUE_CMAP.copy()
-        imshow_kwargs = dict(cmap=cmap, vmin=0, vmax=1, aspect="auto")
+        imshow_kwargs = dict(cmap=cmap, vmin=0, vmax=1)
     cmap.set_bad(color="none")
 
-    n_cols = len(col_lengths)
-    fig, (ax_top, ax_bottom) = plt.subplots(
-        2, 1, figsize=(1.2 * n_cols + 1, 1.2 * len(row_lengths_top) + 1.5), sharex=True
-    )
-    fig.subplots_adjust(hspace=0.02)
+    fig, ax = plt.subplots(figsize=(1.3 * n + 1.5, 1.3 * n + 1.5))
+    im = ax.imshow(masked, **imshow_kwargs)
 
-    im = ax_top.imshow(top_masked, **imshow_kwargs)
-    ax_bottom.imshow(bottom_masked, **imshow_kwargs)
+    for i in range(n):
+        for j in range(n):
+            val = value_matrix[i, j]
+            if np.isnan(val):
+                continue
+            text_color = "white" if abs(val) > 0.6 else "#0b0b0b"
+            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=10, color=text_color)
 
-    for ax, matrix, row_lengths, condition_label, length_label in (
-        (ax_top, top_matrix, row_lengths_top, "downstream insertion", downstream_label),
-        (ax_bottom, bottom_matrix, row_lengths_bottom, "upstream insertion", upstream_label),
-    ):
-        for i in range(matrix.shape[0]):
-            for j in range(matrix.shape[1]):
-                val = matrix[i, j]
-                if np.isnan(val):
-                    continue
-                text_color = "white" if abs(val) > 0.6 else "#0b0b0b"
-                ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=9, color=text_color)
-        ax.set_yticks(range(len(row_lengths)))
-        ax.set_yticklabels([length_label[length] for length in row_lengths])
-        ax.set_ylabel(f"{condition_label}\n(bp)", fontsize=9)
-        for spine in ax.spines.values():
-            spine.set_visible(False)
+    # Divider along the diagonal, separating the downstream (upper) and
+    # upstream (lower) triangles.
+    ax.plot([-0.5, n - 0.5], [-0.5, n - 0.5], color="#898781", linewidth=1.2, zorder=3)
 
-    ax_bottom.set_xticks(range(n_cols))
-    ax_bottom.set_xticklabels([str(length) for length in col_lengths])
-    ax_bottom.set_xlabel("Insertion length paired against (bp)")
+    ax.set_xticks(range(n))
+    ax.set_xticklabels([str(length) for length in lengths])
+    ax.set_yticks(range(n))
+    ax.set_yticklabels([str(length) for length in lengths])
+    ax.set_xlabel("Insertion length (bp)")
+    ax.set_ylabel("Insertion length (bp)")
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
     method_label = "Spearman" if method == "spearman" else "Pearson"
     value_label = r"$\rho$" if method == "spearman" else "R$^2$"
-    fig.suptitle(
-        f"Pairwise correlation of exon2 variant effect\n"
-        f"({method_label} {value_label}, downstream on top / upstream on bottom, mirrored at baseline)",
-        y=1.0,
+    ax.set_title(
+        f"Pairwise correlation of exon2 variant effect ({method_label} {value_label})\n"
+        "upper triangle = downstream insertion, lower triangle = upstream insertion"
     )
 
-    cbar = fig.colorbar(im, ax=(ax_top, ax_bottom), shrink=0.8, pad=0.03)
+    cbar = fig.colorbar(im, ax=ax, shrink=0.85, pad=0.03)
     cbar.set_label(f"{method_label} {value_label}")
 
+    fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
     print(f"Saved {out_path}")
 

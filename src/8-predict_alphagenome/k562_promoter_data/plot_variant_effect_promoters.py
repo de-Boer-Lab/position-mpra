@@ -498,20 +498,38 @@ def plot_correlation_heatmap_mirror(df: pd.DataFrame, out_path: str, method: str
     ax.set_xticklabels([str(length) for length in lengths], fontsize=20, rotation=45)
     ax.set_yticks(range(n))
     ax.set_yticklabels([str(length) for length in lengths], fontsize=20, rotation=45)
-    ax.set_xlabel("Insertion length (bp)", fontsize=20)
-    ax.set_ylabel("Insertion length (bp)", fontsize=20)
+    ax.set_xlabel("Upstream insertion length (bp)", fontsize=20)
+    ax.set_ylabel("Upstream insertion length (bp)", fontsize=20)
+
+    # Top/right axes echo the same tick positions but label the downstream
+    # (upper-triangle) condition, since the bottom/left axes are claimed by
+    # the upstream (lower-triangle) label above.
+    secax_x = ax.secondary_xaxis("top")
+    secax_x.set_xticks(range(n))
+    secax_x.set_xticklabels([str(length) for length in lengths], fontsize=20, rotation=45)
+    secax_x.set_xlabel("Downstream insertion length (bp)", fontsize=20)
+
+    secax_y = ax.secondary_yaxis("right")
+    secax_y.set_yticks(range(n))
+    secax_y.set_yticklabels([str(length) for length in lengths], fontsize=20, rotation=45)
+    secax_y.set_ylabel("Downstream insertion length (bp)", fontsize=20, labelpad=15)
 
     for spine in ax.spines.values():
+        spine.set_visible(False)
+    for spine in secax_x.spines.values():
+        spine.set_visible(False)
+    for spine in secax_y.spines.values():
         spine.set_visible(False)
 
     method_label = "Spearman" if method == "spearman" else "Pearson"
     value_label = r"$\rho$" if method == "spearman" else "R$^2$"
     ax.set_title(
         f"Pairwise correlation of exon2 variant effect ({method_label} {value_label})\n"
-        "upper triangle = downstream insertion, lower triangle = upstream insertion"
+        "upper triangle = downstream insertion, lower triangle = upstream insertion",
+        pad=20,
     )
 
-    cbar = fig.colorbar(im, ax=ax, shrink=0.85, pad=0.03)
+    cbar = fig.colorbar(im, ax=ax, shrink=0.85, pad=0.18)
     cbar.set_label(f"{method_label} {value_label}", fontsize=20)
     cbar.ax.tick_params(labelsize=20)
 

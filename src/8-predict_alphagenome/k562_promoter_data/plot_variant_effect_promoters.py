@@ -477,7 +477,7 @@ def plot_correlation_heatmap_mirror(df: pd.DataFrame, out_path: str, method: str
         imshow_kwargs = dict(cmap=cmap, vmin=0, vmax=1)
     cmap.set_bad(color="none")
 
-    fig, ax = plt.subplots(figsize=(1.3 * n + 1.5, 1.3 * n + 1.5))
+    fig, ax = plt.subplots(figsize=(1.4 * n + 2, 1.4 * n + 2))
     im = ax.imshow(masked, **imshow_kwargs)
 
     for i in range(n):
@@ -486,18 +486,20 @@ def plot_correlation_heatmap_mirror(df: pd.DataFrame, out_path: str, method: str
             if np.isnan(val):
                 continue
             text_color = "white" if abs(val) > 0.6 else "#0b0b0b"
-            ax.text(j, i, f"{val:.2f}", ha="center", va="center", fontsize=10, color=text_color)
+            ax.text(
+                j, i, f"{val:.2f}", ha="center", va="center", fontsize=20, fontweight="bold", color=text_color
+            )
 
     # Divider along the diagonal, separating the downstream (upper) and
     # upstream (lower) triangles.
-    ax.plot([-0.5, n - 0.5], [-0.5, n - 0.5], color="#898781", linewidth=1.2, zorder=3)
+    ax.plot([-0.5, n - 0.5], [-0.5, n - 0.5], color="#898781", linestyle=":", linewidth=1.5, zorder=3)
 
     ax.set_xticks(range(n))
-    ax.set_xticklabels([str(length) for length in lengths])
+    ax.set_xticklabels([str(length) for length in lengths], fontsize=20, rotation=45)
     ax.set_yticks(range(n))
-    ax.set_yticklabels([str(length) for length in lengths])
-    ax.set_xlabel("Insertion length (bp)")
-    ax.set_ylabel("Insertion length (bp)")
+    ax.set_yticklabels([str(length) for length in lengths], fontsize=20, rotation=45)
+    ax.set_xlabel("Insertion length (bp)", fontsize=20)
+    ax.set_ylabel("Insertion length (bp)", fontsize=20)
 
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -510,7 +512,8 @@ def plot_correlation_heatmap_mirror(df: pd.DataFrame, out_path: str, method: str
     )
 
     cbar = fig.colorbar(im, ax=ax, shrink=0.85, pad=0.03)
-    cbar.set_label(f"{method_label} {value_label}")
+    cbar.set_label(f"{method_label} {value_label}", fontsize=20)
+    cbar.ax.tick_params(labelsize=20)
 
     fig.tight_layout()
     fig.savefig(out_path, dpi=150, bbox_inches="tight")

@@ -1,4 +1,5 @@
-# Position dependent variant effects reveal importance of context in genomic regulation
+# Position-dependent variant effects reveal importance of context in genomic regulation
+
 This repository contains the analysis code and supporting materials for studying how the positional context of genetic variants influences regulatory activity. The project integrates experimental variant effect data, model-based predictions, clustering, and in silico mutagenesis to characterize context-dependent regulatory mechanisms.
 
 ## Directory Structure
@@ -22,5 +23,5 @@ This repository contains the analysis code and supporting materials for studying
 
 If you use this code, please cite:
 
-> Position-dependent variant effects reveal the importance of context in genomic regulation.
+> Position-dependent variant effects reveal importance of context in genomic regulation
 > bioRxiv. https://doi.org/10.64898/2026.03.17.712488

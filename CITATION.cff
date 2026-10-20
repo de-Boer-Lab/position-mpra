@@ -9,7 +9,7 @@ authors:
     given-names: "Ryan"
     affiliation: "The Jackson Laboratory"
   - family-names: "de Boer"
-    given-names: "Carl G."
+    given-names: "Carl"
     affiliation: "University of British Columbia"
 license: MIT
 repository-code: "https://github.com/de-Boer-Lab/position-mpra"
